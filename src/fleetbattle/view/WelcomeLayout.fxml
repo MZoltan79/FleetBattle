@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="400.0" prefWidth="610.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fleetbattle.view.WelcomeLayoutController">
+   <children>
+      <SplitPane fx:id="splitPane" dividerPositions="0.41776315789473684" prefHeight="411.0" prefWidth="610.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <items>
+          <AnchorPane fx:id="leftPane" minWidth="250.0" prefHeight="160.0" prefWidth="100.0">
+               <children>
+                  <Label layoutX="14.0" layoutY="14.0" prefHeight="29.0" prefWidth="145.0" text="Player login" AnchorPane.leftAnchor="50.0" AnchorPane.topAnchor="0.0">
+                     <padding>
+                        <Insets left="5.0" />
+                     </padding>
+                     <font>
+                        <Font name="System Bold" size="19.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="14.0" layoutY="38.0" text="nick" AnchorPane.leftAnchor="5.0">
+                     <padding>
+                        <Insets left="5.0" />
+                     </padding>
+                  </Label>
+                  <Label layoutX="10.0" layoutY="70.0" text="password" AnchorPane.leftAnchor="5.0">
+                     <padding>
+                        <Insets left="5.0" />
+                     </padding>
+                  </Label>
+                  <TextField fx:id="nick" layoutX="79.0" layoutY="33.0" AnchorPane.leftAnchor="79.0" AnchorPane.rightAnchor="6.0">
+                     <padding>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </padding>
+                  </TextField>
+                  <CheckBox id="guest" fx:id="guestCheckBox" layoutX="21.0" layoutY="104.0" mnemonicParsing="false" onAction="#initGuestNoteLabel" text="Play as guest" AnchorPane.leftAnchor="10.0" />
+                  <Button fx:id="login" layoutX="182.0" layoutY="100.0" mnemonicParsing="false" prefWidth="60.0" text="Login" AnchorPane.rightAnchor="8.0" />
+                  <PasswordField fx:id="password" layoutX="76.0" layoutY="65.0" AnchorPane.leftAnchor="79.0" AnchorPane.rightAnchor="6.0" />
+                  <RadioButton fx:id="singleplayer" layoutX="13.0" layoutY="179.0" mnemonicParsing="false" selected="true" text="Singleplayer" AnchorPane.leftAnchor="10.0">
+                     <toggleGroup>
+                        <ToggleGroup fx:id="gameMode" />
+                     </toggleGroup>
+                  </RadioButton>
+                  <RadioButton fx:id="multiplayer" layoutX="13.0" layoutY="212.0" mnemonicParsing="false" text="Multiplayer" toggleGroup="$gameMode" AnchorPane.leftAnchor="10.0" />
+                  <Button fx:id="startButton" layoutX="20.0" layoutY="246.0" mnemonicParsing="false" prefWidth="60.0" text="Start" />
+                  <Label fx:id="guestNoteLabel" layoutX="19.0" layoutY="133.0" textFill="RED" AnchorPane.leftAnchor="10.0">
+                     <font>
+                        <Font size="10.0" />
+                     </font>
+                  </Label>
+                  <Button fx:id="placeShips" layoutX="150.0" layoutY="246.0" mnemonicParsing="false" onAction="#handlePlaceShipsButton" text="Place ships" AnchorPane.rightAnchor="8.0" />
+               </children>
+            </AnchorPane>
+          <AnchorPane fx:id="rightPane" minHeight="0.0" minWidth="350.0" prefHeight="160.0" prefWidth="100.0">
+               <children>
+                  <Canvas height="100.0" layoutX="14.0" layoutY="14.0" width="350.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                  <ImageView fitHeight="100.0" fitWidth="350.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@torpedo.jpg" />
+                     </image>
+                  </ImageView>
+               </children>
+            </AnchorPane>
+        </items>
+      </SplitPane>
+   </children>
+</AnchorPane>
