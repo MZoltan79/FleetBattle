@@ -20,9 +20,7 @@ public class MainApp extends Application {
 	
 	private Stage primaryStage;
 	private BorderPane rootLayout;
-	private Canvas leftCanvas; 
-	private Canvas rightCanvas; 
-	private static Game game;
+	private static Game game;				
 	private static boolean[][] table;
 	
 	
@@ -66,7 +64,6 @@ public class MainApp extends Application {
 			WelcomeLayoutController controller = loader.getController();
 			controller.setMainApp(this);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -78,10 +75,7 @@ public class MainApp extends Application {
 			loader.setLocation(MainApp.class.getResource("view/PlaceShipsLayout.fxml"));
 			AnchorPane placeShipsLayout = loader.load();
 			rootLayout.setCenter(placeShipsLayout);
-//			BorderPane placingPane = loader.load();
-//			Canvas placingCanvas = new Canvas(300,300);
 			Canvas placingCanvas = (Canvas) loader.getNamespace().get("placingCanvas");
-//			placingPane.setCenter(placingCanvas);
 			GraphicsContext gc = placingCanvas.getGraphicsContext2D();
 			gc.setFill(Color.CADETBLUE);
 			gc.fillRect(10, 10, 280, 280);
@@ -90,9 +84,9 @@ public class MainApp extends Application {
 			
 			controller.setMainApp(this);
 			game = new Game();
+			game.setupOfFields();
 			game.placeAll();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -125,7 +119,6 @@ public class MainApp extends Application {
 			game.placeAll();
 			controller.setMainApp(this);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
