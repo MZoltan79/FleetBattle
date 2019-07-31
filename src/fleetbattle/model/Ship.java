@@ -6,19 +6,25 @@ public enum Ship {
 	DESTROYER(4,4),
 	SUBMARINE(3,3),
 	CRUISER(2,2),
-	PATROLBOAT(1,2);
-	
+	PATROLBOAT(1,1);
 	
 	protected final int size;
 	protected boolean vertical;
-	protected int[]coordinates = new int[4];
+	protected int[]coordinates;
 	protected boolean sunk = false;
 	int hit;
+	public boolean isPlaced = false;
 	
 	
 	private Ship(int size, int hit) {
 		this.size = size;
 		this.hit = hit;
+		if(size<2) {
+			this.coordinates = new int[4];
+		} else {
+			this.coordinates = new int[size*2]; 
+		}
+		
 	}
 
 	
@@ -40,7 +46,7 @@ public enum Ship {
 	}
 
 	
-	public int getSize() {
+	public Integer getSize() {
 		return size;
 	}
 
@@ -57,6 +63,8 @@ public enum Ship {
 
 	public int[] getCoordinates() {
 		return coordinates;
+	}
+	public void printCoordinates() {
 		
 	}
 	
@@ -66,8 +74,8 @@ public enum Ship {
 	}
 
 	public void setEndpoint(int x, int y) {
-		coordinates[2] = x;
-		coordinates[3] = y;
+		coordinates[coordinates.length-2] = x;
+		coordinates[coordinates.length-1] = y;
 	}
 
 	

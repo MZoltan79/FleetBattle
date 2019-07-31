@@ -1,6 +1,7 @@
 package fleetbattle.model;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 /*
@@ -69,6 +70,9 @@ public class Game {
 	
 	private static char water = '⬜';
 
+	public List<Ship> getFleet() {
+		return fleet;
+	}
 	
 	/*
 	 * 
@@ -186,7 +190,7 @@ public class Game {
 	 * Ez állítja be a hajó összes koordinátáját, és rögzíti a table-ben.
 	 */
 	private void placeShip(Ship ship) {
-		if(ship.isVertical() == true) {
+		if(!ship.isVertical()) {
 			ship.setEndpoint(ship.getCoordinates()[0] + (ship.getSize()-1), (ship.getCoordinates()[1]));
 		} else {
 			ship.setEndpoint(ship.getCoordinates()[0], (ship.getCoordinates()[1] + (ship.getSize()-1)));
@@ -264,6 +268,10 @@ public class Game {
 	public boolean[][] getTable() { //ez szintén a MainAppal kommunikál, átadja a table-t
 		return table;
 	}
+	
+	public void setFleet(ArrayList<Ship> fleet) {
+		Game.fleet = fleet;
+	}
 
 	
 	
@@ -330,6 +338,10 @@ public class Game {
 		}
 	}
 	
+	public Ship getShip(Ship ship) {
+		return ship;
+	}
+	
 
 	/*
 	 * main függvényre szerintem nem lesz szükség, egyelőre megtartanám lehetséges
@@ -356,11 +368,12 @@ public class Game {
 			System.out.println();
 		}
 		fleet.forEach(e -> {
-			System.out.println(e.getCoordinates()[0] + ", " +
+			System.out.println(e.name() + ": " + e.getCoordinates()[0] + ", " +
 					e.getCoordinates()[1] + ", " +
-					e.getCoordinates()[2] + ", " +
-					e.getCoordinates()[3]);
+					e.getCoordinates()[e.getCoordinates().length-2] + ", " +
+					e.getCoordinates()[e.getCoordinates().length-1]);
 		});
+		System.out.println(carrier.name());
 		game.reset();
 		System.out.println(table[0][0]);
 		System.out.println("freefields size = " + freeFields.size());
