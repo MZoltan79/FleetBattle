@@ -202,6 +202,7 @@ public class Game {
 				table[ship.getCoordinates()[0]+i][ship.getCoordinates()[1]] = true;
 			}
 		}
+		ship.isPlaced = true;
 	}
 	/*
 	 * Ez helyezi el végül mind az 5 hajót a táblán.
@@ -215,6 +216,9 @@ public class Game {
 		placeShip(carrier);
 		fleet.add(carrier);
 		freeFields.removeAll(freeFields);
+		System.out.println("game carrier: " + carrier.coordinates[0] + "," + carrier.coordinates[1] 
+				+ " " + carrier.coordinates[8] + "," + carrier.coordinates[9]);
+		System.out.println(carrier.isVertical());
 		
 		destroyer();
 		checkFields(destroyer);
@@ -247,11 +251,6 @@ public class Game {
 	
 	/*
 	 * A hajók lerakása itt véget ért.
-	 * 
-	 * 
-	 * 
-	 * 
-	 * Az alábbiakban a 
 	 */
 
 	public void reset() { // ez a MainApp-al kommunikál, amikor autoplace-re nyomunk.

@@ -42,13 +42,15 @@ public class MainApp extends Application {
 	private boolean singlePlayer = true;;
 	static int x = 0;
 	static int y = 0;
-	String shipName = "";
+	String shipName = "CARRIER";
+	Ship tempShip = null;
 	Ship carrier = Ship.CARRIER;
 	Ship destroyer = Ship.DESTROYER;
 	Ship submarine = Ship.SUBMARINE;
 	Ship cruiser = Ship.CRUISER;
 	Ship patrolBoat = Ship.PATROLBOAT;
 	ArrayList<Ship> fleet = new ArrayList<>();
+	ToggleGroup group = new ToggleGroup();
 	
 	@Override
 	public void start(Stage primaryStage) {
@@ -59,6 +61,10 @@ public class MainApp extends Application {
 		showWelcomeLayout();
 	}
 	
+	public static void main(String[] args) {
+		launch(args);
+	}
+
 	public void initRootLayout() {
 		try {
 			FXMLLoader loader = new FXMLLoader();
@@ -102,38 +108,34 @@ public class MainApp extends Application {
 	}
 
 	public void drawTable() {
-			table = game.getTable();
-			Font font = new Font(30);
-			gc.setFont(font);
-			Character[] columns = {'A','B','C','D','E','F','G','H'};
-			gc.setFill(Color.CADETBLUE);
-			for(int i = 0; i < columns.length; i++) {
-				gc.fillText(columns[i].toString(), i*30 + 53, 39);
-			}
-			gc.fillText("I", 297, 39);
-			gc.fillText("J", 327, 39);
-			for(Integer i = 1; i < 10; i++) {
-				gc.fillText(i.toString(), 18, (i-1)*30 + 75);
-			}
-			gc.fillText("10", 12, 345);
-			
-			
-			for(int i = 0; i < 10; i++) {
-				for(int j = 0; j < 10; j++) {
-					if(table[i][j] == true) {
-						gc.setFill(Color.DARKRED);
-						gc.fillRect((i*30 + 49), (j*30 + 49), 28, 28);
-					} else {
-						gc.setFill(Color.CADETBLUE);
-						gc.fillRect((i*30 + 49), (j*30 + 49), 28, 28);
-					}
+		fleet = (ArrayList<Ship>) game.getFleet();
+		table = game.getTable();
+		Font font = new Font(30);
+		gc.setFont(font);
+		Character[] columns = {'A','B','C','D','E','F','G','H'};
+		gc.setFill(Color.CADETBLUE);
+		for(int i = 0; i < columns.length; i++) {
+			gc.fillText(columns[i].toString(), i*30 + 53, 39);
+		}
+		gc.fillText("I", 297, 39);
+		gc.fillText("J", 327, 39);
+		for(Integer i = 1; i < 10; i++) {
+			gc.fillText(i.toString(), 18, (i-1)*30 + 75);
+		}
+		gc.fillText("10", 12, 345);
+		for(int i = 0; i < 10; i++) {
+			for(int j = 0; j < 10; j++) {
+				if(table[i][j] == true) {
+					gc.setFill(Color.DARKRED);
+					gc.fillRect((i*30 + 49), (j*30 + 49), 28, 28);
+				} else {
+					gc.setFill(Color.CADETBLUE);
+					gc.fillRect((i*30 + 49), (j*30 + 49), 28, 28);
 				}
 			}
+		}
 	}
 	
-	public void placeShip(String shipName) {
-		
-	}
 	
 	public void placeShips() {
 		try {
@@ -142,10 +144,8 @@ public class MainApp extends Application {
 			loader.setLocation(MainApp.class.getResource("view/PlaceShipsLayout_new.fxml"));
 			placeShipsLayout = loader.load();
 			placingPane = (BorderPane) loader.getNamespace().get("placingPane");
-			rootLayout.setCenter(placeShipsLayout);
 			placingPane.setCenter(canvas);
 			table = game.getTable();
-			ToggleGroup group = new ToggleGroup();
 			RadioButton rbCarrier = (RadioButton) loader.getNamespace().get("rbCarrier");
 			RadioButton rbDestroyer = (RadioButton) loader.getNamespace().get("rbDestroyer");
 			RadioButton rbSubmarine = (RadioButton) loader.getNamespace().get("rbSubmarine");
@@ -156,24 +156,26 @@ public class MainApp extends Application {
 			rbSubmarine.setToggleGroup(group);
 			rbCruiser.setToggleGroup(group);
 			rbPatrolBoat.setToggleGroup(group);
-//			rbCarrier.setSelected(true);
-//			shipName = ((RadioButton)group.getSelectedToggle()).getText().toUpperCase();
+			rbCarrier.setSelected(true);
+			getShipName();
+			rootLayout.setCenter(placeShipsLayout);
 			drawTable();
 			canvas.addEventFilter(MouseEvent.MOUSE_DRAGGED, this::mouseDraggedOrReleased);
 			canvas.addEventFilter(MouseEvent.MOUSE_RELEASED, this::mouseDraggedOrReleased);
-			canvas.addEventFilter(MouseEvent.MOUSE_PRESSED, this::mouseReleased);
+			canvas.addEventFilter(MouseEvent.MOUSE_PRESSED, this::mousePressed);
+			canvas.addEventFilter(MouseEvent.MOUSE_MOVED, this::mouseMoved);
+			canvas.addEventFilter(MouseEvent.MOUSE_PRESSED, this::mousePrimaryPressed);
+			canvas.addEventFilter(MouseEvent.MOUSE_RELEASED, this::mousePrimaryReleased);
 						
 			
 			PlaceShipsLayoutController controller = loader.getController();
 			controller.setMainApp(this);
+			controller.showShipData();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 	
-	public ArrayList<Ship> getFleet() {
-		return fleet;
-	}
 	
 	public void initFleet() {
 		fleet.add(carrier);
@@ -184,7 +186,23 @@ public class MainApp extends Application {
 	}
 	
 	public String getShipName() {
+		FXMLLoader loader = new FXMLLoader();
+		loader.setLocation(MainApp.class.getResource("view/PlaceShipsLayout_new.fxml"));
+		shipName = ((RadioButton)group.getSelectedToggle()).getText().toUpperCase();
+		switch (shipName) {
+			case "CARRIER": tempShip = carrier; break;
+			case "DESTROYER": tempShip = destroyer; break;
+			case "SUBMARINE": tempShip = submarine; break;
+			case "CRUISER": tempShip = cruiser; break;
+			case "PATROLBOAT": tempShip = patrolBoat; break;
+			default: break;
+			}
 		return shipName;
+	}
+	public void mouseMoved(MouseEvent ev) {
+		x = (int)((ev.getX()-51)/30);
+		y = (int)(ev.getY()-51)/30;
+		
 	}
 	
 	public void mouseDraggedOrReleased(MouseEvent ev) {
@@ -197,13 +215,101 @@ public class MainApp extends Application {
 		}
 		drawTable();
 	}
-	public void mouseReleased(MouseEvent ev) {
+	public void mousePressed(MouseEvent ev) {
 		if(x >= 0 && y >= 0) {
 			drawTable();
+			System.out.println(x + " " + y);
 		}
 	}
 	
-	public static void main(String[] args) {
-		launch(args);
+	public void mousePrimaryPressed(MouseEvent ev) {
+		if(ev.getButton() == MouseButton.PRIMARY) tempShip.setStartpoint(x, y);
+	}
+	public void mousePrimaryReleased(MouseEvent ev) {
+		if(ev.getButton() == MouseButton.PRIMARY) tempShip.setEndpoint(x, y);
+	}
+	
+	public Ship getTempShip() {
+		return tempShip;
+	}
+
+	public void setTempShip(Ship tempShip) {
+		this.tempShip = tempShip;
+	}
+
+	public static boolean[][] getTable() {
+		return table;
+	}
+	
+	public static void setTable(boolean[][] table) {
+		MainApp.table = table;
+	}
+	
+	public void clearTable() {
+		for(int i = 0; i < 10; i++) {
+			for(int j = 0; j < 10; j++) {
+				table[i][j] = false;
+			}
+		}
+		if(fleet.size() != 0) {
+			fleet.removeAll(fleet);
+		}
+		drawTable();
+	}
+	
+	public void placeShip(Ship tempShip) {
+		
+	}
+	public boolean checkShipIsPlaced() {
+		for(Ship s: fleet) {
+			if(s.equals(tempShip)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public Ship getCarrier() {
+		return carrier;
+	}
+
+	public void setCarrier(Ship carrier) {
+		this.carrier = carrier;
+	}
+
+	public Ship getDestroyer() {
+		return destroyer;
+	}
+
+	public void setDestroyer(Ship destroyer) {
+		this.destroyer = destroyer;
+	}
+
+	public Ship getSubmarine() {
+		return submarine;
+	}
+
+	public void setSubmarine(Ship submarine) {
+		this.submarine = submarine;
+	}
+
+	public Ship getCruiser() {
+		return cruiser;
+	}
+
+	public void setCruiser(Ship cruiser) {
+		this.cruiser = cruiser;
+	}
+
+	public Ship getPatrolBoat() {
+		return patrolBoat;
+	}
+
+	public void setPatrolBoat(Ship patrolBoat) {
+		this.patrolBoat = patrolBoat;
+	}
+
+	public ArrayList<Ship> getFleet() {
+		return fleet;
 	}
 }

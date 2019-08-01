@@ -20,11 +20,11 @@
                <children>
                   <VBox prefHeight="153.0" prefWidth="125.0" spacing="10.0">
                      <children>
-                        <RadioButton fx:id="rbCarrier" mnemonicParsing="false" text="Carrier" />
-                        <RadioButton fx:id="rbDestroyer" mnemonicParsing="false" text="Destroyer" />
-                        <RadioButton fx:id="rbSubmarine" mnemonicParsing="false" text="Submarine" />
-                        <RadioButton fx:id="rbCruiser" mnemonicParsing="false" text="Cruiser" />
-                        <RadioButton fx:id="rbPatrolBoat" mnemonicParsing="false" text="Patrolboat" />
+                        <RadioButton fx:id="rbCarrier" mnemonicParsing="false" onAction="#showShipData" text="Carrier" />
+                        <RadioButton fx:id="rbDestroyer" mnemonicParsing="false" onAction="#showShipData" text="Destroyer" />
+                        <RadioButton fx:id="rbSubmarine" mnemonicParsing="false" onAction="#showShipData" text="Submarine" />
+                        <RadioButton fx:id="rbCruiser" mnemonicParsing="false" onAction="#showShipData" text="Cruiser" />
+                        <RadioButton fx:id="rbPatrolBoat" mnemonicParsing="false" onAction="#showShipData" text="Patrolboat" />
                      </children>
                      <padding>
                         <Insets left="10.0" top="10.0" />
@@ -48,9 +48,9 @@
                         <Label text="Type:" />
                         <Label text="Size:" GridPane.rowIndex="1" />
                         <Label text="Status:" GridPane.rowIndex="2" />
-                        <Label fx:id="typeLabel" GridPane.columnIndex="1" />
-                        <Label fx:id="sizeLabel" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                        <Label fx:id="statusLabel" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                        <Label fx:id="typeLabel" text="Carrier" GridPane.columnIndex="1" />
+                        <Label fx:id="sizeLabel" text="5" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <Label fx:id="statusLabel" text="Not placed" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                      </children>
                   </GridPane>
                   <Button fx:id="removeButton" layoutX="70.0" layoutY="153.0" mnemonicParsing="false" onAction="#handleRemoveButton" text="Remove" AnchorPane.leftAnchor="65.0" />
