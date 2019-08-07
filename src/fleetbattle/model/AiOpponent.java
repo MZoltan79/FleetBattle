@@ -5,11 +5,10 @@ import java.util.List;
 import java.util.Random;
 
 /*
- *  A hajók random elhelyezése történik ebben a class-ban, illetve
- *  egyéb adatokat is innen nyerünk ki. később még ki fogok venni 
+ *  A hajók random elhelyezése történik ebben a class-ban. később még ki fogok venni 
  *  felesleges adatokat, de még nem tudom mi kellhet még innen... 
  */
-public class Game {
+public class AiOpponent {
 
 	private static Ship carrier;
 	private static Ship destroyer;
@@ -45,7 +44,7 @@ public class Game {
 	 * Hajók elhelyezésénél ebből választja ki random szerűen azt a mezőt,
 	 * ahonnan "indulhat" a hajó.		
 	 */
-	protected static ArrayList<Integer[]> freeFields = new ArrayList<>();
+	protected ArrayList<Integer[]> freeFields = new ArrayList<>();
 	
 	
 	private static int hitsremaining = 15;
@@ -70,7 +69,7 @@ public class Game {
 	
 	private static char water = '⬜';
 
-	public List<Ship> getFleet() {
+	public ArrayList<Ship> getFleet() {
 		return fleet;
 	}
 	
@@ -83,7 +82,6 @@ public class Game {
 			for(int j = 0; j < 10; j++) {
 				fieldsCoordinates.add(new Integer[] {i,j});
 			}
-			
 		}
 	}
 	/*
@@ -190,11 +188,7 @@ public class Game {
 	 * Ez állítja be a hajó összes koordinátáját, és rögzíti a table-ben.
 	 */
 	private void placeShip(Ship ship) {
-		if(!ship.isVertical()) {
-			ship.setEndpoint(ship.getCoordinates()[0] + (ship.getSize()-1), (ship.getCoordinates()[1]));
-		} else {
-			ship.setEndpoint(ship.getCoordinates()[0], (ship.getCoordinates()[1] + (ship.getSize()-1)));
-		}
+		ship.setCoordinates(ship.getCoordinates()[0], ship.getCoordinates()[1]);
 		for(int i = 0; i < ship.getSize(); i++) {
 			if(ship.isVertical()) {
 				table[ship.getCoordinates()[0]][ship.getCoordinates()[1]+i] = true;
@@ -269,7 +263,7 @@ public class Game {
 	}
 	
 	public void setFleet(ArrayList<Ship> fleet) {
-		Game.fleet = fleet;
+		AutoPlace.fleet = fleet;
 	}
 
 	
@@ -341,6 +335,12 @@ public class Game {
 		return ship;
 	}
 	
+	public void printFleet() {
+		fleet.forEach(e -> {
+			e.printCoordinates();
+		});
+	}
+	
 
 	/*
 	 * main függvényre szerintem nem lesz szükség, egyelőre megtartanám lehetséges
@@ -349,11 +349,11 @@ public class Game {
 	
 	public static void main(String[] args) {
 		
-		Game game = new Game();
+		AiOpponent game = new AiOpponent();
 		game.setupOfFields();
 		game.placeAll();
 		System.out.println(table[0][0]);
-		System.out.println("freefields size = " + freeFields.size());
+		System.out.println("freefields size = " + game.freeFields.size());
 		System.out.println("fleet size = " + fleet.size());
 		System.out.println(fieldsCoordinates.get(1)[0] + ", " + fieldsCoordinates.get(1)[1]);
 		for(int i = 0; i < 10; i++) {
@@ -373,9 +373,10 @@ public class Game {
 					e.getCoordinates()[e.getCoordinates().length-1]);
 		});
 		System.out.println(carrier.name());
+//		game.printFleet();
 		game.reset();
 		System.out.println(table[0][0]);
-		System.out.println("freefields size = " + freeFields.size());
+		System.out.println("freefields size = " + game.freeFields.size());
 		System.out.println("fleet size = " + fleet.size());
 		System.out.println(fieldsCoordinates.get(1)[0] + ", " + fieldsCoordinates.get(1)[1]);
 		for(int i = 0; i < 10; i++) {
@@ -388,12 +389,16 @@ public class Game {
 			}
 			System.out.println();
 		}
-		fleet.forEach(e -> {
-			System.out.println(e.getCoordinates()[0] + ", " +
-					e.getCoordinates()[1] + ", " +
-					e.getCoordinates()[2] + ", " +
-					e.getCoordinates()[3]);
-		});
+//		fleet.forEach(e -> {
+//			System.out.println(e.getCoordinates()[0] + ", " +
+//					e.getCoordinates()[1] + ", " +
+//					e.getCoordinates()[2] + ", " +
+//					e.getCoordinates()[3]);
+//		});
+	}
+
+	public AiOpponent() {
+		this.freeFields = new ArrayList<>();
 	}
 
 

@@ -2,7 +2,7 @@ package fleetbattle.view;
 
 
 import fleetbattle.MainApp;
-import fleetbattle.model.Game;
+import fleetbattle.model.AutoPlace;
 import fleetbattle.model.Ship;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -52,7 +52,7 @@ public class PlaceShipsLayoutController {
 	
 	private MainApp mainApp;
 	
-	private Game game;
+	private AutoPlace game;
 
 	public Canvas getPlacingCanvas() {
 		return placingCanvas;
@@ -65,6 +65,12 @@ public class PlaceShipsLayoutController {
 	
 	
 	public void handleReadyButton() {
+		if(mainApp.getFleet().size() < 5) {
+			
+		} else {
+			mainApp.setOwnTable(mainApp.getTable());
+			mainApp.showWelcomeLayout();
+		}
 		
 	}
 
@@ -94,9 +100,9 @@ public class PlaceShipsLayoutController {
 	
 	public void handleClearButton() {
 		mainApp.clearTable();
+		showShipData();
 	}
 
-	@SuppressWarnings("static-access")
 	public void handleRemoveButton() {
 		int i = 0;
 		for(i = 0 ;i < mainApp.getFleet().size(); i++) {

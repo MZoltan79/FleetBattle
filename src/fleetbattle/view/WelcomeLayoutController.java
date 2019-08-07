@@ -6,6 +6,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
 
 public class WelcomeLayoutController {
 	
@@ -25,6 +26,15 @@ public class WelcomeLayoutController {
 	@FXML
 	Button placeShips;
 	
+	@FXML
+	Button loginButton;
+	
+	@FXML
+	RadioButton singleplayer;
+
+	@FXML
+	RadioButton multiplayer;
+	
 	private MainApp mainApp;
 	
 	public void setMainApp(MainApp mainApp) {
@@ -37,6 +47,18 @@ public class WelcomeLayoutController {
 	
 	public void handlePlaceShipsButton() {
 		mainApp.showPlaceShipsLayout();
+	}
+	
+	public void handleMultiPlayerRadioButton() {
+		mainApp.setSinglePlayer(false);
+	}
+
+	public void handleSinglePlayerRadioButton() {
+		mainApp.setSinglePlayer(true);
+	}
+	
+	public void handleStartButton() {
+		mainApp.showBattleLayout();
 	}
 
 }

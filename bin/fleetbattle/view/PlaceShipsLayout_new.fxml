@@ -30,7 +30,7 @@
                         <Insets left="10.0" top="10.0" />
                      </padding>
                   </VBox>
-                  <Button fx:id="readyButton" layoutX="80.0" layoutY="358.0" mnemonicParsing="false" text="Ready for fight" AnchorPane.rightAnchor="8.0" />
+                  <Button fx:id="readyButton" layoutX="80.0" layoutY="358.0" mnemonicParsing="false" onAction="#handleReadyButton" text="Ready for fight" AnchorPane.rightAnchor="8.0" />
                   <Button fx:id="autoPlaceButton" layoutX="12.0" layoutY="358.0" mnemonicParsing="false" onAction="#handleAutoPlaceButton" prefHeight="26.0" prefWidth="63.0" text="Auto" AnchorPane.leftAnchor="10.0" />
                   <Button fx:id="placeButton" layoutX="14.0" layoutY="153.0" mnemonicParsing="false" onAction="#handlePlaceButton" prefHeight="26.0" prefWidth="55.0" text="Place" AnchorPane.leftAnchor="5.0" />
                   <Button fx:id="clearButton" layoutX="117.0" layoutY="153.0" mnemonicParsing="false" onAction="#handleClearButton" prefWidth="55.0" text="Clear" AnchorPane.rightAnchor="5.0" />

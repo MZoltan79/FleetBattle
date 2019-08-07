@@ -2,25 +2,22 @@ package fleetbattle;
 	
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Observable;
-
-import application.Main;
-import fleetbattle.model.Game;
+import data.PlayersData;
+import fleetbattle.model.AutoPlace;
+import fleetbattle.model.GamePlay;
+import fleetbattle.model.Player;
 import fleetbattle.model.Ship;
+import fleetbattle.view.BattleLayoutController;
 import fleetbattle.view.PlaceShipsLayoutController;
 import fleetbattle.view.WelcomeLayoutController;
 import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ObservableStringValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -37,8 +34,11 @@ public class MainApp extends Application {
 	private Stage primaryStage;
 	private BorderPane rootLayout;
 	private static BorderPane placingPane;
-	private static Game game;				
+	private static AutoPlace ap;				
+	private ToggleGroup group = new ToggleGroup();
+	
 	private static boolean[][] table;
+	private static boolean[][] ownTable;
 	private boolean singlePlayer = true;;
 	static int x = 0;
 	static int y = 0;
@@ -50,13 +50,16 @@ public class MainApp extends Application {
 	Ship cruiser = Ship.CRUISER;
 	Ship patrolBoat = Ship.PATROLBOAT;
 	ArrayList<Ship> fleet = new ArrayList<>();
-	ToggleGroup group = new ToggleGroup();
+	Player player1;
+	Player player2;
+	GamePlay gp;
 	
 	@Override
 	public void start(Stage primaryStage) {
 		this.primaryStage = primaryStage;
 		this.primaryStage.setResizable(false);
 		this.primaryStage.setTitle("Fleet Battle");
+		this.primaryStage.getIcons().add(new Image("file:/home/moricz/own-workspace/FleetBattle/src/fleetbattle/view/Battleship-icon3.png"));
 		initRootLayout();
 		showWelcomeLayout();
 	}
@@ -65,6 +68,9 @@ public class MainApp extends Application {
 		launch(args);
 	}
 
+	
+	// Ez az alap stage. a root...
+	
 	public void initRootLayout() {
 		try {
 			FXMLLoader loader = new FXMLLoader();
@@ -79,6 +85,8 @@ public class MainApp extends Application {
 		}
 	}
 	
+	// Ez a kezdőképernyö
+	
 	public void showWelcomeLayout() {
 		try {
 			FXMLLoader loader = new FXMLLoader();
@@ -86,6 +94,16 @@ public class MainApp extends Application {
 			AnchorPane welcomeLayout = loader.load();
 			rootLayout.setCenter(welcomeLayout);
 			WelcomeLayoutController controller = loader.getController();
+			RadioButton singleplayer = (RadioButton) loader.getNamespace().get("singleplayer");
+			RadioButton multiplayer = (RadioButton) loader.getNamespace().get("multiplayer");
+			ToggleGroup modeGroup = new ToggleGroup();
+			singleplayer.setToggleGroup(modeGroup);
+			multiplayer.setToggleGroup(modeGroup);
+			if(singlePlayer) {
+				singleplayer.setSelected(true);
+			} else {
+				multiplayer.setSelected(true);
+			}
 			controller.setMainApp(this);
 
 		} catch (IOException e) {
@@ -94,22 +112,27 @@ public class MainApp extends Application {
 		
 	}
 	
+	
+	// Ez a hajók elrendezése képernyő
+	
 	public void showPlaceShipsLayout() {
-		game = new Game();
-		game.setupOfFields();
+		ap = new AutoPlace();
+		ap.setupOfFields();
 		placeShips();
 	}
 	
 	public void autoPlace() {
-		game.reset();
-		game.placeAll();
+		ap.reset();
+		ap.placeAll();
 		placeShips();
 		drawTable();
 	}
 
+	//PlaceShipsLayout ablakban ez rajzolja a táblát
+	
 	public void drawTable() {
-		fleet = (ArrayList<Ship>) game.getFleet();
-		table = game.getTable();
+		fleet = (ArrayList<Ship>) ap.getFleet();
+		table = ap.getTable();
 		Font font = new Font(30);
 		gc.setFont(font);
 		Character[] columns = {'A','B','C','D','E','F','G','H'};
@@ -136,6 +159,7 @@ public class MainApp extends Application {
 		}
 	}
 	
+	// Itt manuális lerakásnál MouseEvent-ek segítségével lehet letenni a hajókat
 	
 	public void placeShips() {
 		try {
@@ -145,7 +169,7 @@ public class MainApp extends Application {
 			placeShipsLayout = loader.load();
 			placingPane = (BorderPane) loader.getNamespace().get("placingPane");
 			placingPane.setCenter(canvas);
-			table = game.getTable();
+			table = ap.getTable();
 			RadioButton rbCarrier = (RadioButton) loader.getNamespace().get("rbCarrier");
 			RadioButton rbDestroyer = (RadioButton) loader.getNamespace().get("rbDestroyer");
 			RadioButton rbSubmarine = (RadioButton) loader.getNamespace().get("rbSubmarine");
@@ -176,6 +200,28 @@ public class MainApp extends Application {
 		}
 	}
 	
+	// Ez a battle (maga a játék) képernyő
+	
+	public void showBattleLayout() {
+		try {
+			AnchorPane battleLayout;
+			AnchorPane rightPane;
+			FXMLLoader loader = new FXMLLoader();
+			loader.setLocation(MainApp.class.getResource("view/BattleLayout.fxml"));
+			battleLayout = loader.load();
+			rightPane = (AnchorPane) loader.getNamespace().get("rightPane");
+			rootLayout.setCenter(battleLayout);
+			gp = GamePlay.getInstance();
+			rightPane.getChildren().setAll(gp);
+			gp.setMainApp(this);
+			BattleLayoutController bController = loader.getController();
+			bController.setMainApp(this);
+			bController.showTurnStat();
+			gp.startSinglePlayer(); // !!!!
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	public void initFleet() {
 		fleet.add(carrier);
@@ -199,11 +245,19 @@ public class MainApp extends Application {
 			}
 		return shipName;
 	}
+	
+	/*
+	 *  Tábla méretéhez igazítva állítja be "x" és "y" értékét, mely a hajók koordinátájának
+	 *  a rögzítéséhez kell.
+	 */
+	
 	public void mouseMoved(MouseEvent ev) {
 		x = (int)((ev.getX()-51)/30);
 		y = (int)(ev.getY()-51)/30;
 		
 	}
+	
+	// úgyszintén az elhelyezéshez kell, de ez már a rögzíti is a hajókat a table-ön.
 	
 	public void mouseDraggedOrReleased(MouseEvent ev) {
 		x = (int)((ev.getX()-51)/30);
@@ -215,6 +269,8 @@ public class MainApp extends Application {
 		}
 		drawTable();
 	}
+	
+	// Ez frissíti a tábla kirajzolását.
 	public void mousePressed(MouseEvent ev) {
 		if(x >= 0 && y >= 0) {
 			drawTable();
@@ -222,6 +278,7 @@ public class MainApp extends Application {
 		}
 	}
 	
+	// Ez az adot hajó kezdö és vég pontjait rögzíti a Ship coordinates-be.
 	public void mousePrimaryPressed(MouseEvent ev) {
 		if(ev.getButton() == MouseButton.PRIMARY) tempShip.setStartpoint(x, y);
 	}
@@ -236,12 +293,22 @@ public class MainApp extends Application {
 	public void setTempShip(Ship tempShip) {
 		this.tempShip = tempShip;
 	}
+	
+	public boolean[][] getOwnTable() {
+		return ownTable;
+	}
 
-	public static boolean[][] getTable() {
+	public void setOwnTable(boolean[][] ownTable) {
+		MainApp.ownTable = ownTable;
+	}
+
+
+
+	public boolean[][] getTable() {
 		return table;
 	}
 	
-	public static void setTable(boolean[][] table) {
+	public void setTable(boolean[][] table) {
 		MainApp.table = table;
 	}
 	
@@ -269,47 +336,17 @@ public class MainApp extends Application {
 		return false;
 	}
 
-	public Ship getCarrier() {
-		return carrier;
-	}
-
-	public void setCarrier(Ship carrier) {
-		this.carrier = carrier;
-	}
-
-	public Ship getDestroyer() {
-		return destroyer;
-	}
-
-	public void setDestroyer(Ship destroyer) {
-		this.destroyer = destroyer;
-	}
-
-	public Ship getSubmarine() {
-		return submarine;
-	}
-
-	public void setSubmarine(Ship submarine) {
-		this.submarine = submarine;
-	}
-
-	public Ship getCruiser() {
-		return cruiser;
-	}
-
-	public void setCruiser(Ship cruiser) {
-		this.cruiser = cruiser;
-	}
-
-	public Ship getPatrolBoat() {
-		return patrolBoat;
-	}
-
-	public void setPatrolBoat(Ship patrolBoat) {
-		this.patrolBoat = patrolBoat;
-	}
 
 	public ArrayList<Ship> getFleet() {
 		return fleet;
 	}
+	
+	public boolean isSinglePlayer() {
+		return singlePlayer;
+	}
+
+	public void setSinglePlayer(boolean singlePlayer) {
+		this.singlePlayer = singlePlayer;
+	}
+
 }
