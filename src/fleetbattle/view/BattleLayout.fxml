@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -40,6 +41,7 @@
                      </font>
                   </Label>
                   <Label fx:id="hitIndicator" layoutX="14.0" layoutY="130.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" />
+                  <Canvas fx:id="ownCanvas" height="200.0" layoutX="5.0" layoutY="186.0" width="200.0" />
                </children>
             </AnchorPane>
           <AnchorPane fx:id="rightPane" minHeight="398.0" minWidth="398.0" prefHeight="398.0" prefWidth="398.0">

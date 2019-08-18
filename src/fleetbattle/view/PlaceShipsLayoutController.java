@@ -1,22 +1,24 @@
 package fleetbattle.view;
 
 
+
 import fleetbattle.MainApp;
-import fleetbattle.model.AutoPlace;
+import fleetbattle.model.GameData;
 import fleetbattle.model.Ship;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 
 public class PlaceShipsLayoutController {
+	GameData gd;
 	
 	public PlaceShipsLayoutController() {
 		
 	}
 	@FXML
 	public void initialize() {
+		gd = GameData.getInstance();
 	}
 	
 	
@@ -52,8 +54,6 @@ public class PlaceShipsLayoutController {
 	
 	private MainApp mainApp;
 	
-	private AutoPlace game;
-
 	public Canvas getPlacingCanvas() {
 		return placingCanvas;
 	}
@@ -65,10 +65,13 @@ public class PlaceShipsLayoutController {
 	
 	
 	public void handleReadyButton() {
-		if(mainApp.getFleet().size() < 5) {
-			
-		} else {
+		if(gd.getOwnFleet().size() > 4) {
 			mainApp.setOwnTable(mainApp.getTable());
+			
+			System.out.println("ready előtt\nSaját:");
+			for(Ship s: gd.getOwnFleet()) {
+				System.out.println(s.name() + " koordináták: " + s.getCoordinates()[0] + "," +s.getCoordinates()[1]);
+			}
 			mainApp.showWelcomeLayout();
 		}
 		
@@ -83,8 +86,8 @@ public class PlaceShipsLayoutController {
 			} else {
 				mainApp.getTempShip().setVertical(false);
 			}
-			if(mainApp.getFleet().size() < 5) {
-				mainApp.getFleet().add(mainApp.getTempShip());
+			if(gd.getOwnFleet().size() < 5) {
+				gd.getOwnFleet().add(mainApp.getTempShip());
 			} else {
 				
 			}
@@ -93,7 +96,7 @@ public class PlaceShipsLayoutController {
 				mainApp.getTempShip().getCoordinates()[mainApp.getTempShip().getCoordinates().length-2] + "," +
 				mainApp.getTempShip().getCoordinates()[mainApp.getTempShip().getCoordinates().length-1]);
 		System.out.println(mainApp.getTempShip().isVertical());
-		System.out.println(mainApp.getFleet().size());
+		System.out.println(gd.getOwnFleet().size());
 		}
 		showShipData();
 	}
@@ -103,6 +106,8 @@ public class PlaceShipsLayoutController {
 		showShipData();
 	}
 
+	// Ez kicsit még zavaros!!!
+	
 	public void handleRemoveButton() {
 		int i = 0;
 		for(i = 0 ;i < mainApp.getFleet().size(); i++) {
@@ -110,8 +115,8 @@ public class PlaceShipsLayoutController {
 				break;
 			}
 		}
-		if(mainApp.getFleet().size() > 0) {
-			mainApp.getFleet().remove(i);
+		if(gd.getOwnFleet().size() > 0) {
+			gd.getOwnFleet().remove(i);
 		} else {
 			
 		}
@@ -126,6 +131,7 @@ public class PlaceShipsLayoutController {
 		}
 		showShipData();
 		mainApp.drawTable();
+		
 	}
 	
 	public void handleAutoPlaceButton() {

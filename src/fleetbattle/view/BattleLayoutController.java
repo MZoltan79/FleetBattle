@@ -1,9 +1,15 @@
 package fleetbattle.view;
 
 import fleetbattle.MainApp;
+import fleetbattle.model.GameData;
 import fleetbattle.model.GamePlay;
+import fleetbattle.model.Ship;
 import javafx.fxml.FXML;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 
 public class BattleLayoutController {
 	
@@ -11,12 +17,16 @@ public class BattleLayoutController {
 	GamePlay gp; 
 	Integer oppFleetSize;
 	Integer ownFleetSize;
+	GraphicsContext gc;
+	GameData gd;
 	
 	public void initialize() {
+		gd = GameData.getInstance();
 		gp = GamePlay.getInstance();
 		gp.setController(this);
-		
+		gc = ownCanvas.getGraphicsContext2D();
 		oppFleetSize = gp.getOpponentsFleet().size();
+		ownFleetSize = gp.getOwnFleet().size();
 	}
 	
 	@FXML
@@ -34,15 +44,26 @@ public class BattleLayoutController {
 	@FXML
 	Label yourFleet;
 	
+	@FXML
+	Canvas ownCanvas;
+	
 	public void showTurnStat() {
 		turnIndicator.setText(gp.isTurn()? "Your turn":"Enemy's turn");
 		turn.setText(gp.getTurns().toString());
 		oppFleet.setText(oppFleetSize.toString());
-		ownFleetSize = mainApp.getFleet().size();
+		ownFleetSize = gd.getOwnFleet().size();
 		yourFleet.setText(ownFleetSize.toString());
 	}
 	
-	public void showHitIndicator(String srt) {
+	public void setOppFleetIndicator(String srt) {
+		oppFleet.setText(srt);
+	}
+
+	public void setOwnFleetIndicator(String srt) {
+		yourFleet.setText(srt);
+	}
+	
+	public void setHitIndicator(String srt) {
 		hitIndicator.setText(srt);
 	}
 	
@@ -50,6 +71,73 @@ public class BattleLayoutController {
 		this.mainApp = mainApp;
 	}
 	
+	public void drawOwnCanvas() {
+		for(int i = 0; i < 10; i++) {
+			for(int j = 0; j < 10; j++) {
+				gc.setFill(Color.CADETBLUE);
+				gc.fillRect((i*15 + 25), (j*15 + 25), 14, 14);
+				if(gp.getOwnTable()[i][j] == true) {
+					gc.setFill(Color.DARKGREEN);
+					gc.fillRect((i*15 + 25), (j*15 + 25), 14, 14);
+				}
+			}
+		}
+	}
 	
+	public void drawOpponentsHit() {
+		Font font = new Font(15);
+		gc.setFont(font);
+		if(gp.getOpponentsHits()[gp.getA()][gp.getB()] == true) {
+		} else if(gp.getOpponentsHits()[gp.getA()][gp.getB()] == false && gp.getOwnTable()[gp.getA()][gp.getB()] == false) {
+			gp.setHit(false);
+			gc.setFill(Color.DARKRED);
+			gc.fillText("X", (gp.getA()*15)+26, (gp.getB()*15)+38);
+		} else if(gp.getOpponentsHits()[gp.getA()][gp.getB()] == false && gp.getOwnTable()[gp.getA()][gp.getB()] == true) {
+			gp.setHit(true);
+			gc.setFill(Color.DARKRED);
+			gc.fillOval((gp.getA()*15)+25, (gp.getB()*15)+25,14,14);
+		}
+		
+	}
+	
+	public void drawOwnSunkedShips() {
+		gc.setFill(Color.DARKRED);
+		for(Ship s: gd.getOwnFleet()) {
+			if((s.isVertical() == true) && s.isSunk()) {
+				for(int i = 0; i < s.getSize(); i++) {
+					gc.fillRect((s.getCoordinates()[0]*15 + 25), (s.getCoordinates()[1+i*2]*15 + 25), 14, 14);
+				}
+			} else if((s.isVertical() == false) && s.isSunk()){
+				for(int i = 0; i < s.getSize(); i++) {
+					gc.fillRect((s.getCoordinates()[0+i*2]*15 + 25), (s.getCoordinates()[1]*15 + 25), 14, 14);
+				}
+			}
+			
+		}
+		
+	}
+	
+	public void checkOwnFleet() {
+		for(Ship s: gd.getOwnFleet()) {
+			boolean sunk = true;
+			if(s.isVertical()) {
+				for(int i = 0; i < s.getSize(); i++) {
+					if(gp.getOpponentsHits()[s.getCoordinates()[0+(i*2)]][s.getCoordinates()[1+(i*2)]] == false) {
+						sunk = false;
+					}
+				}
+			} else {
+				for(int i = 0; i < s.getSize(); i++) {
+					if(gp.getOpponentsHits()[s.getCoordinates()[0+(i*2)]][s.getCoordinates()[1+(i*2)]] == false) {
+						sunk = false;
+					}
+				}
+			}
+			if(sunk) {
+				s.setSunk();
+				
+			}
+		}
+	}
 
 }

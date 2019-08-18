@@ -2,8 +2,10 @@ package fleetbattle;
 	
 import java.io.IOException;
 import java.util.ArrayList;
-import data.PlayersData;
+
+import fleetbattle.model.AutoPlaceOpponent;
 import fleetbattle.model.AutoPlace;
+import fleetbattle.model.GameData;
 import fleetbattle.model.GamePlay;
 import fleetbattle.model.Player;
 import fleetbattle.model.Ship;
@@ -29,37 +31,43 @@ import javafx.stage.Stage;
 
 public class MainApp extends Application {
 
-	private Canvas canvas = new Canvas(398,398);
-	private GraphicsContext gc = canvas.getGraphicsContext2D();
 	private Stage primaryStage;
 	private BorderPane rootLayout;
 	private static BorderPane placingPane;
-	private static AutoPlace ap;				
 	private ToggleGroup group = new ToggleGroup();
+	private Canvas canvas = new Canvas(398,398);
+	private GraphicsContext gc = canvas.getGraphicsContext2D();
 	
-	private static boolean[][] table;
-	private static boolean[][] ownTable;
-	private boolean singlePlayer = true;;
-	static int x = 0;
-	static int y = 0;
-	String shipName = "CARRIER";
+	private static AutoPlace ap;				
+	GamePlay gp;
+	GameData gd;
 	Ship tempShip = null;
 	Ship carrier = Ship.CARRIER;
 	Ship destroyer = Ship.DESTROYER;
 	Ship submarine = Ship.SUBMARINE;
 	Ship cruiser = Ship.CRUISER;
 	Ship patrolBoat = Ship.PATROLBOAT;
+
 	ArrayList<Ship> fleet = new ArrayList<>();
+	ArrayList<Ship> ownFleet = new ArrayList<>();
+
 	Player player1;
 	Player player2;
-	GamePlay gp;
+
+	private static boolean[][] table;
+	private static boolean[][] ownTable;
+	private boolean singlePlayer = true;;
+	static int x = 0;
+	static int y = 0;
+	String shipName = "CARRIER";
+	
 	
 	@Override
 	public void start(Stage primaryStage) {
 		this.primaryStage = primaryStage;
 		this.primaryStage.setResizable(false);
 		this.primaryStage.setTitle("Fleet Battle");
-		this.primaryStage.getIcons().add(new Image("file:/home/moricz/own-workspace/FleetBattle/src/fleetbattle/view/Battleship-icon3.png"));
+		this.primaryStage.getIcons().add(new Image("file:/home/moricz/workspaces/own-workspace/FleetBattle/src/fleetbattle/view/Battleship-icon3.png"));
 		initRootLayout();
 		showWelcomeLayout();
 	}
@@ -67,6 +75,7 @@ public class MainApp extends Application {
 	public static void main(String[] args) {
 		launch(args);
 	}
+	
 
 	
 	// Ez az alap stage. a root...
@@ -105,19 +114,18 @@ public class MainApp extends Application {
 				multiplayer.setSelected(true);
 			}
 			controller.setMainApp(this);
-
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
 	}
 	
 	
 	// Ez a hajók elrendezése képernyő
 	
 	public void showPlaceShipsLayout() {
-		ap = new AutoPlace();
+		ap = AutoPlace.getInstance();
 		ap.setupOfFields();
+		gd = GameData.getInstance();
 		placeShips();
 	}
 	
@@ -131,7 +139,7 @@ public class MainApp extends Application {
 	//PlaceShipsLayout ablakban ez rajzolja a táblát
 	
 	public void drawTable() {
-		fleet = (ArrayList<Ship>) ap.getFleet();
+		fleet = gd.getOwnFleet();
 		table = ap.getTable();
 		Font font = new Font(30);
 		gc.setFont(font);
@@ -204,6 +212,10 @@ public class MainApp extends Application {
 	
 	public void showBattleLayout() {
 		try {
+			System.out.println("showBattleLayout - mainAppban:");
+			for(Ship s: gd.getOwnFleet()) {
+				System.out.println(s.name() + " koordináták: " + s.getCoordinates()[0] + "," +s.getCoordinates()[1]);
+			}
 			AnchorPane battleLayout;
 			AnchorPane rightPane;
 			FXMLLoader loader = new FXMLLoader();
@@ -212,8 +224,8 @@ public class MainApp extends Application {
 			rightPane = (AnchorPane) loader.getNamespace().get("rightPane");
 			rootLayout.setCenter(battleLayout);
 			gp = GamePlay.getInstance();
-			rightPane.getChildren().setAll(gp);
 			gp.setMainApp(this);
+			rightPane.getChildren().setAll(gp);
 			BattleLayoutController bController = loader.getController();
 			bController.setMainApp(this);
 			bController.showTurnStat();
@@ -223,13 +235,6 @@ public class MainApp extends Application {
 		}
 	}
 	
-	public void initFleet() {
-		fleet.add(carrier);
-		fleet.add(destroyer);
-		fleet.add(submarine);
-		fleet.add(cruiser);
-		fleet.add(patrolBoat);
-	}
 	
 	public String getShipName() {
 		FXMLLoader loader = new FXMLLoader();
@@ -293,6 +298,8 @@ public class MainApp extends Application {
 	public void setTempShip(Ship tempShip) {
 		this.tempShip = tempShip;
 	}
+	
+	
 	
 	public boolean[][] getOwnTable() {
 		return ownTable;
