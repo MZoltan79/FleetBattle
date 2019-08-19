@@ -256,6 +256,7 @@ public class AutoPlace {
 		
 		GameData gd = GameData.getInstance();
 		gd.setOwnFleet(fleet);
+		gd.setOwnTable(table);
 //		for(Ship s: gd.getOwnFleet()) {
 //			System.out.println(s.name() + " koordináták: " + s.getCoordinates()[0] + "," +s.getCoordinates()[1]);
 //		}

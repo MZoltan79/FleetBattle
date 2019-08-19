@@ -38,28 +38,28 @@ public class MainApp extends Application {
 	private Canvas canvas = new Canvas(398,398);
 	private GraphicsContext gc = canvas.getGraphicsContext2D();
 	
-	private static AutoPlace ap;				
+	AutoPlace ap;				
 	GamePlay gp;
 	GameData gd;
+	
 	Ship tempShip = null;
 	Ship carrier = Ship.CARRIER;
 	Ship destroyer = Ship.DESTROYER;
 	Ship submarine = Ship.SUBMARINE;
 	Ship cruiser = Ship.CRUISER;
 	Ship patrolBoat = Ship.PATROLBOAT;
-
 	ArrayList<Ship> fleet = new ArrayList<>();
 	ArrayList<Ship> ownFleet = new ArrayList<>();
 
 	Player player1;
 	Player player2;
 
-	private static boolean[][] table;
-	private static boolean[][] ownTable;
+	private boolean[][] table;
 	private boolean singlePlayer = true;;
 	static int x = 0;
 	static int y = 0;
 	String shipName = "CARRIER";
+
 	
 	
 	@Override
@@ -85,6 +85,9 @@ public class MainApp extends Application {
 			FXMLLoader loader = new FXMLLoader();
 			loader.setLocation(MainApp.class.getResource("view/RootLayout.fxml"));
 			rootLayout = loader.load();
+			ap = AutoPlace.getInstance();
+			ap.setupOfFields();
+			gd = GameData.getInstance();
 			Scene scene = new Scene(rootLayout);
 			scene.getStylesheets().add(getClass().getResource("view/application.css").toExternalForm());
 			primaryStage.setScene(scene);
@@ -123,9 +126,6 @@ public class MainApp extends Application {
 	// Ez a hajók elrendezése képernyő
 	
 	public void showPlaceShipsLayout() {
-		ap = AutoPlace.getInstance();
-		ap.setupOfFields();
-		gd = GameData.getInstance();
 		placeShips();
 	}
 	
@@ -140,7 +140,7 @@ public class MainApp extends Application {
 	
 	public void drawTable() {
 		fleet = gd.getOwnFleet();
-		table = ap.getTable();
+		table = gd.getOwnTable();
 		Font font = new Font(30);
 		gc.setFont(font);
 		Character[] columns = {'A','B','C','D','E','F','G','H'};
@@ -156,7 +156,7 @@ public class MainApp extends Application {
 		gc.fillText("10", 12, 345);
 		for(int i = 0; i < 10; i++) {
 			for(int j = 0; j < 10; j++) {
-				if(table[i][j] == true) {
+				if(gd.getOwnTable()[i][j] == true) {
 					gc.setFill(Color.DARKRED);
 					gc.fillRect((i*30 + 49), (j*30 + 49), 28, 28);
 				} else {
@@ -177,7 +177,7 @@ public class MainApp extends Application {
 			placeShipsLayout = loader.load();
 			placingPane = (BorderPane) loader.getNamespace().get("placingPane");
 			placingPane.setCenter(canvas);
-			table = ap.getTable();
+			table = gd.getOwnTable();
 			RadioButton rbCarrier = (RadioButton) loader.getNamespace().get("rbCarrier");
 			RadioButton rbDestroyer = (RadioButton) loader.getNamespace().get("rbDestroyer");
 			RadioButton rbSubmarine = (RadioButton) loader.getNamespace().get("rbSubmarine");
@@ -213,9 +213,6 @@ public class MainApp extends Application {
 	public void showBattleLayout() {
 		try {
 			System.out.println("showBattleLayout - mainAppban:");
-			for(Ship s: gd.getOwnFleet()) {
-				System.out.println(s.name() + " koordináták: " + s.getCoordinates()[0] + "," +s.getCoordinates()[1]);
-			}
 			AnchorPane battleLayout;
 			AnchorPane rightPane;
 			FXMLLoader loader = new FXMLLoader();
@@ -268,9 +265,9 @@ public class MainApp extends Application {
 		x = (int)((ev.getX()-51)/30);
 		y = (int)(ev.getY()-51)/30;
 		if(ev.getButton() == MouseButton.PRIMARY) {
-			table[x][y] = true;
+			gd.getOwnTable()[x][y] = true;
 		} else if (ev.getButton() == MouseButton.SECONDARY) {
-			table[x][y] = false;
+			gd.getOwnTable()[x][y] = false;
 		}
 		drawTable();
 	}
@@ -298,35 +295,23 @@ public class MainApp extends Application {
 	public void setTempShip(Ship tempShip) {
 		this.tempShip = tempShip;
 	}
-	
-	
-	
-	public boolean[][] getOwnTable() {
-		return ownTable;
-	}
-
-	public void setOwnTable(boolean[][] ownTable) {
-		MainApp.ownTable = ownTable;
-	}
-
-
 
 	public boolean[][] getTable() {
 		return table;
 	}
 	
 	public void setTable(boolean[][] table) {
-		MainApp.table = table;
+		this.table = table;
 	}
 	
 	public void clearTable() {
 		for(int i = 0; i < 10; i++) {
 			for(int j = 0; j < 10; j++) {
-				table[i][j] = false;
+				gd.getOwnTable()[i][j] = false;
 			}
 		}
-		if(fleet.size() != 0) {
-			fleet.removeAll(fleet);
+		if(gd.getOwnFleet().size() != 0) {
+			gd.getOwnFleet().removeAll(fleet);
 		}
 		drawTable();
 	}
@@ -335,7 +320,7 @@ public class MainApp extends Application {
 		
 	}
 	public boolean checkShipIsPlaced() {
-		for(Ship s: fleet) {
+		for(Ship s: gd.getOwnFleet()) {
 			if(s.equals(tempShip)) {
 				return true;
 			}

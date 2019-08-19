@@ -6,6 +6,8 @@ public class GameData {
 	
 	ArrayList<Ship> ownFleet;
 	ArrayList<Ship> oppFleet;
+	boolean[][] ownTable;
+	boolean[][] opponentsTable;
 	
 	private static GameData instance;
 	
@@ -19,6 +21,8 @@ public class GameData {
 	private GameData() {
 		ownFleet = new ArrayList<Ship>();
 		oppFleet = new ArrayList<Ship>();
+		ownTable = new boolean[10][10];
+		opponentsTable = new boolean[10][10];
 	}
 
 	public ArrayList<Ship> getOwnFleet() {
@@ -28,8 +32,26 @@ public class GameData {
 	public ArrayList<Ship> getOppFleet() {
 		return oppFleet;
 	}
+	
+	
 
 	
+	public boolean[][] getOwnTable() {
+		return ownTable;
+	}
+
+	public void setOwnTable(boolean[][] table) {
+		ownTable = table;
+	}
+
+	public boolean[][] getOpponentsTable() {
+		return opponentsTable;
+	}
+
+	public void setOpponentsTable(boolean[][] table) {
+		opponentsTable = table;
+	}
+
 	public void setOppFleet(ArrayList<Ship> list) {
 		this.oppFleet = list;
 //		oppFleet.removeAll(oppFleet);

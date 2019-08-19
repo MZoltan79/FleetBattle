@@ -25,8 +25,8 @@ public class BattleLayoutController {
 		gp = GamePlay.getInstance();
 		gp.setController(this);
 		gc = ownCanvas.getGraphicsContext2D();
-		oppFleetSize = gp.getOpponentsFleet().size();
-		ownFleetSize = gp.getOwnFleet().size();
+		oppFleetSize = gd.getOppFleet().size();
+		ownFleetSize = gd.getOwnFleet().size();
 	}
 	
 	@FXML
@@ -50,8 +50,9 @@ public class BattleLayoutController {
 	public void showTurnStat() {
 		turnIndicator.setText(gp.isTurn()? "Your turn":"Enemy's turn");
 		turn.setText(gp.getTurns().toString());
-		oppFleet.setText(oppFleetSize.toString());
+		oppFleetSize = gd.getOppFleet().size();
 		ownFleetSize = gd.getOwnFleet().size();
+		oppFleet.setText(oppFleetSize.toString());
 		yourFleet.setText(ownFleetSize.toString());
 	}
 	
@@ -76,7 +77,7 @@ public class BattleLayoutController {
 			for(int j = 0; j < 10; j++) {
 				gc.setFill(Color.CADETBLUE);
 				gc.fillRect((i*15 + 25), (j*15 + 25), 14, 14);
-				if(gp.getOwnTable()[i][j] == true) {
+				if(gd.getOwnTable()[i][j] == true) {
 					gc.setFill(Color.DARKGREEN);
 					gc.fillRect((i*15 + 25), (j*15 + 25), 14, 14);
 				}
@@ -87,15 +88,29 @@ public class BattleLayoutController {
 	public void drawOpponentsHit() {
 		Font font = new Font(15);
 		gc.setFont(font);
-		if(gp.getOpponentsHits()[gp.getA()][gp.getB()] == true) {
-		} else if(gp.getOpponentsHits()[gp.getA()][gp.getB()] == false && gp.getOwnTable()[gp.getA()][gp.getB()] == false) {
-			gp.setHit(false);
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		System.out.println("saját tábla: " + gd.getOwnTable()[gp.getA()][gp.getB()]);
+		
+		if(gp.getOpponentsHits()[gp.getA()][gp.getB()]) {
+			gp.ownTurn();
+		} else if(gp.getOpponentsHits()[gp.getA()][gp.getB()] == false && gd.getOwnTable()[gp.getA()][gp.getB()] == false) {
+			gp.getOpponentsHits()[gp.getA()][gp.getB()] = true;
+//			gp.setHit(false);
 			gc.setFill(Color.DARKRED);
 			gc.fillText("X", (gp.getA()*15)+26, (gp.getB()*15)+38);
-		} else if(gp.getOpponentsHits()[gp.getA()][gp.getB()] == false && gp.getOwnTable()[gp.getA()][gp.getB()] == true) {
-			gp.setHit(true);
+			gp.ownTurn();
+		} else if(gp.getOpponentsHits()[gp.getA()][gp.getB()] == false && gd.getOwnTable()[gp.getA()][gp.getB()] == true) {
+			gp.getOpponentsHits()[gp.getA()][gp.getB()] = true;
+//			gp.setHit(true);
 			gc.setFill(Color.DARKRED);
 			gc.fillOval((gp.getA()*15)+25, (gp.getB()*15)+25,14,14);
+			gp.aITurn();;
 		}
 		
 	}

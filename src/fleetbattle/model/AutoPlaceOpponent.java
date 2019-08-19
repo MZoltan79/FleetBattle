@@ -183,6 +183,7 @@ public class AutoPlaceOpponent {
 		
 		GameData gd = GameData.getInstance();
 		gd.setOppFleet(fleet);
+		gd.setOpponentsTable(table);
 	}
 	
 

@@ -50,7 +50,6 @@ public class PlaceShipsLayoutController {
 	@FXML
 	Button clearButton;
 	
-	private static boolean[][] table;
 	
 	private MainApp mainApp;
 	
@@ -66,12 +65,6 @@ public class PlaceShipsLayoutController {
 	
 	public void handleReadyButton() {
 		if(gd.getOwnFleet().size() > 4) {
-			mainApp.setOwnTable(mainApp.getTable());
-			
-			System.out.println("ready előtt\nSaját:");
-			for(Ship s: gd.getOwnFleet()) {
-				System.out.println(s.name() + " koordináták: " + s.getCoordinates()[0] + "," +s.getCoordinates()[1]);
-			}
 			mainApp.showWelcomeLayout();
 		}
 		
@@ -138,9 +131,6 @@ public class PlaceShipsLayoutController {
 		mainApp.autoPlace();
 		showShipData();
 	}
-	 public static boolean[][] getTable() {
-		 return table;
-	 }
 	 
 	public void showShipData() {
 		switch(mainApp.getShipName()) {
