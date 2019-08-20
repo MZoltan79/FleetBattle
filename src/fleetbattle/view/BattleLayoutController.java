@@ -25,7 +25,7 @@ public class BattleLayoutController {
 		gp = GamePlay.getInstance();
 		gp.setController(this);
 		gc = ownCanvas.getGraphicsContext2D();
-		oppFleetSize = gd.getOppFleet().size();
+		oppFleetSize = gd.getOpponentsFleet().size();
 		ownFleetSize = gd.getOwnFleet().size();
 	}
 	
@@ -50,7 +50,7 @@ public class BattleLayoutController {
 	public void showTurnStat() {
 		turnIndicator.setText(gp.isTurn()? "Your turn":"Enemy's turn");
 		turn.setText(gp.getTurns().toString());
-		oppFleetSize = gd.getOppFleet().size();
+		oppFleetSize = gd.getOpponentsFleet().size();
 		ownFleetSize = gd.getOwnFleet().size();
 		oppFleet.setText(oppFleetSize.toString());
 		yourFleet.setText(ownFleetSize.toString());
@@ -88,12 +88,6 @@ public class BattleLayoutController {
 	public void drawOpponentsHit() {
 		Font font = new Font(15);
 		gc.setFont(font);
-		try {
-			Thread.sleep(500);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		
 		System.out.println("saját tábla: " + gd.getOwnTable()[gp.getA()][gp.getB()]);
 		
@@ -101,13 +95,11 @@ public class BattleLayoutController {
 			gp.ownTurn();
 		} else if(gp.getOpponentsHits()[gp.getA()][gp.getB()] == false && gd.getOwnTable()[gp.getA()][gp.getB()] == false) {
 			gp.getOpponentsHits()[gp.getA()][gp.getB()] = true;
-//			gp.setHit(false);
 			gc.setFill(Color.DARKRED);
 			gc.fillText("X", (gp.getA()*15)+26, (gp.getB()*15)+38);
 			gp.ownTurn();
 		} else if(gp.getOpponentsHits()[gp.getA()][gp.getB()] == false && gd.getOwnTable()[gp.getA()][gp.getB()] == true) {
 			gp.getOpponentsHits()[gp.getA()][gp.getB()] = true;
-//			gp.setHit(true);
 			gc.setFill(Color.DARKRED);
 			gc.fillOval((gp.getA()*15)+25, (gp.getB()*15)+25,14,14);
 			gp.aITurn();;

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class GameData {
 	
 	ArrayList<Ship> ownFleet;
-	ArrayList<Ship> oppFleet;
+	ArrayList<Ship> opponentsFleet;
 	boolean[][] ownTable;
 	boolean[][] opponentsTable;
 	
@@ -20,7 +20,7 @@ public class GameData {
 	
 	private GameData() {
 		ownFleet = new ArrayList<Ship>();
-		oppFleet = new ArrayList<Ship>();
+		opponentsFleet = new ArrayList<Ship>();
 		ownTable = new boolean[10][10];
 		opponentsTable = new boolean[10][10];
 	}
@@ -29,8 +29,8 @@ public class GameData {
 		return ownFleet;
 	}
 
-	public ArrayList<Ship> getOppFleet() {
-		return oppFleet;
+	public ArrayList<Ship> getOpponentsFleet() {
+		return opponentsFleet;
 	}
 	
 	
@@ -53,7 +53,7 @@ public class GameData {
 	}
 
 	public void setOppFleet(ArrayList<Ship> list) {
-		this.oppFleet = list;
+		this.opponentsFleet = list;
 //		oppFleet.removeAll(oppFleet);
 //		oppFleet.addAll(list);
 //		for(Ship s: oppFleet) {
@@ -72,7 +72,7 @@ public class GameData {
 	}
 	
 	public void addShipToOppFleet(Ship ship) {
-		oppFleet.add(ship);
+		opponentsFleet.add(ship);
 	}
 
 	

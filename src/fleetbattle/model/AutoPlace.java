@@ -222,9 +222,9 @@ public class AutoPlace {
 		placeShip(carrier);
 		fleet.add(carrier);
 		freeFields.removeAll(freeFields);
-		System.out.println("game carrier: " + carrier.coordinates[0] + "," + carrier.coordinates[1] 
-				+ " " + carrier.coordinates[8] + "," + carrier.coordinates[9]);
-		System.out.println(carrier.isVertical());
+//		System.out.println("game carrier: " + carrier.coordinates[0] + "," + carrier.coordinates[1] 
+//				+ " " + carrier.coordinates[8] + "," + carrier.coordinates[9]);
+//		System.out.println(carrier.isVertical());
 		
 		destroyer();
 		checkFields(destroyer);

@@ -23,19 +23,15 @@ public class GamePlay extends BorderPane{
 		return instance; 
 	}
 	private MainApp mainApp;
-//	private AutoPlace ap;
 	private AutoPlaceOpponent ao;
 	GameData gd;
 	
-	private boolean hit = false;
 	private Random rnd = new Random();
 	private BattleLayoutController controller;
 	
 	
 	private boolean singlePlayer;
-//	private boolean[][] ownTable;
 	private boolean[][] ownHits;
-//	private boolean[][] opponentsTable;
 	private boolean[][] opponentsHits;
 	private boolean turn;
 
@@ -57,10 +53,9 @@ public class GamePlay extends BorderPane{
 
 		mainApp = new MainApp();
 		gd = GameData.getInstance();
-//		ap = AutoPlace.getInstance();
 		ao = AutoPlaceOpponent.getInstance();
 
-		System.out.println("AiOpponent placeAll() előtt");
+		System.out.println("\nSaját flotta hajóinak kezdő koordinátái AutoPlaceOpponent placeAll() előtt");
 		for(Ship s: gd.getOwnFleet()) {
 			System.out.println(s.name() + " koordináták: " + s.getCoordinates()[0] + "," +s.getCoordinates()[1]);
 		}
@@ -68,22 +63,20 @@ public class GamePlay extends BorderPane{
 		ao.setupOfFields();
 		ao.placeAll();
 		
-		System.out.println("AiOpponent placeAll() után");
+		System.out.println("\nSaját flotta hajóinak kezdő koordinátái AutoPlaceOpponent placeAll() után");
 		for(Ship s: gd.getOwnFleet()) {
 			System.out.println(s.name() + " koordináták: " + s.getCoordinates()[0] + "," +s.getCoordinates()[1]);
 		}
 		
 		ownFleet = gd.getOwnFleet();
 		singlePlayer = mainApp.isSinglePlayer();
-//		ownTable = gd.getOwnTable();
 		opponentsHits = new boolean[10][10];
 		ownHits = new boolean[10][10];
 		turn = rnd.nextBoolean();
 		canvas = new Canvas(398, 398);
 		this.setCenter(canvas);
 		gc = canvas.getGraphicsContext2D();
-//		opponentsTable = gd.getOpponentsTable();
-		opponentsFleet = gd.getOppFleet();
+		opponentsFleet = gd.getOpponentsFleet();
 	}
 	
 
@@ -91,13 +84,6 @@ public class GamePlay extends BorderPane{
 			controller.drawOwnCanvas();
 			drawOpponentsTable();
 			System.out.println();
-//			for(Ship s: gd.getOwnFleet()) {
-//				System.out.println(s.name() + " saját koordináták: " + s.getCoordinates()[0] + "," +s.getCoordinates()[1]);
-//			}
-//			for(Ship s: gd.getOppFleet()) {
-//				System.out.println(s.name() + " ellen koordináták: " + s.getCoordinates()[0] + "," +s.getCoordinates()[1]);
-//			}
-			
 			ownTurn();
 	}
 	
@@ -113,10 +99,7 @@ public class GamePlay extends BorderPane{
 		drawOwnHit();
 		checkOppFleet();
 		drawOpponentsSunkedShips();
-		controller.setOppFleetIndicator(countFleetSize(gd.getOppFleet()).toString());
-//		if(!hit) {
-//			aITurn();
-//		}
+		controller.setOppFleetIndicator(countFleetSize(gd.getOpponentsFleet()).toString());
 	}
 
 	public void drawOwnHit() {
@@ -144,7 +127,7 @@ public class GamePlay extends BorderPane{
 	}
 	
 	public void checkOppFleet() {
-		for(Ship s: gd.getOppFleet()) {
+		for(Ship s: gd.getOpponentsFleet()) {
 			boolean sunk = true;
 				for(int i = 0; i < s.getSize(); i++) {
 					if(ownHits[s.getCoordinates()[0+(i*2)]][s.getCoordinates()[1+(i*2)]] == false) {
@@ -157,7 +140,7 @@ public class GamePlay extends BorderPane{
 	
 	public void drawOpponentsSunkedShips() {
 		gc.setFill(Color.DARKRED);
-		for(Ship s: gd.getOppFleet()) {
+		for(Ship s: gd.getOpponentsFleet()) {
 			if((s.isVertical() == true) && s.isSunk()) {
 				for(int i = 0; i < s.getSize(); i++) {
 					gc.fillRect((s.getCoordinates()[0]*30 + 49), (s.getCoordinates()[1+i*2]*30 + 49), 28, 28);
@@ -224,11 +207,6 @@ public class GamePlay extends BorderPane{
 			}
 		}
 	}
-	
-	public void setHit(boolean hit) {
-		this.hit = hit;
-	}
-
 
 	public int getA() {
 		return a;
@@ -238,11 +216,6 @@ public class GamePlay extends BorderPane{
 	public int getB() {
 		return b;
 	}
-
-
-//	public boolean[][] getOwnTable() {
-//		return ownTable;
-//	}
 
 
 	public boolean[][] getOpponentsHits() {
@@ -257,36 +230,11 @@ public class GamePlay extends BorderPane{
 	
 	public void aITurn() {
 		aiHit();
-//		setOpponentHit();
 		controller.drawOpponentsHit();
 		controller.checkOwnFleet();
 		controller.drawOwnSunkedShips();
-//		if(!hit) {
-//			ownTurn();
-//		}
 	}
 
-//	public void setOpponentHit() {
-//		if(opponentsHits[a][b] == true) {
-//			hit = true;
-//			aITurn();
-//		} else if(opponentsHits[a][b] == false && gd.getOwnTable()[a][b] == false) {
-//			opponentsHits[a][b] = true;
-//			controller.drawOpponentsHit();
-//			controller.checkOwnFleet();
-//			controller.drawOwnSunkedShips();
-//			ownTurn();
-//			hit = false;
-//		} else if(opponentsHits[a][b] == false && gd.getOwnTable()[a][b] == true) {
-//			opponentsHits[a][b] = true;
-//			controller.drawOpponentsHit();
-//			controller.checkOwnFleet();
-//			controller.drawOwnSunkedShips();
-//			aITurn();
-//			hit = true;
-//		}
-//	}
-	
 	
 	
 	public void drawOwnTable() {
@@ -368,7 +316,6 @@ public class GamePlay extends BorderPane{
 		return turn;
 	}
 	
-	@SuppressWarnings("static-access")
 	public void setController(BattleLayoutController controller) {
 		this.controller = controller;
 	}

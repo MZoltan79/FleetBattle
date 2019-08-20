@@ -2,7 +2,6 @@ package fleetbattle.view;
 
 import fleetbattle.MainApp;
 import fleetbattle.model.GameData;
-import fleetbattle.model.Ship;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -60,10 +59,9 @@ public class WelcomeLayoutController {
 	}
 	
 	public void handleStartButton() {
-//		for(Ship s: gd.getOwnFleet()) {
-//			System.out.println(s.name() + " koordináták: " + s.getCoordinates()[0] + "," +s.getCoordinates()[1]);
-//		}
-		mainApp.showBattleLayout();
+		if(gd.getOwnFleet().size() > 4) {
+			mainApp.showBattleLayout();
+		}
 	}
 
 }

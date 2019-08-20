@@ -212,7 +212,6 @@ public class MainApp extends Application {
 	
 	public void showBattleLayout() {
 		try {
-			System.out.println("showBattleLayout - mainAppban:");
 			AnchorPane battleLayout;
 			AnchorPane rightPane;
 			FXMLLoader loader = new FXMLLoader();
