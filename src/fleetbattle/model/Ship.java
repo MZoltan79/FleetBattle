@@ -1,41 +1,36 @@
 package fleetbattle.model;
 
-public enum Ship {
+public class Ship {
 	
-	CARRIER(5,5),
-	DESTROYER(4,4),
-	SUBMARINE(3,3),
-	CRUISER(2,2),
-	PATROLBOAT(1,1);
-	
-	protected final int size;
+	protected String name;
+	protected int size;
 	protected boolean vertical;
 	protected int[]coordinates;
-	protected boolean sunk = false;
-	int hit;
-	public boolean isPlaced = false;
+	protected boolean sunk;
+	public boolean isPlaced;
 	
 	
-	private Ship(int size, int hit) {
-		this.size = size;
-		this.hit = hit;
+	public Ship(String name) {
+		this.name = name;
+		sunk = false;
+		isPlaced = false;
+		switch(name) {
+		case "carrier": size = 5; break;
+		case "destroyer" : size = 4; break;
+		case "submarine" : size = 3; break;
+		case "cruiser" : size = 2; break;
+		case "patrolboat" : size = 1; break;
+		}
 		if(size<2) {
-			this.coordinates = new int[4];
+			coordinates = new int[4];
 		} else {
-			this.coordinates = new int[size*2]; 
+			coordinates = new int[size*2]; 
 		}
 		
 	}
 
 	
-	
-	public int getHit() {
-		return hit;
-	}
 
-	public void setHit(int hit) {
-		this.hit = hit;
-	}
 
 	public boolean isSunk() {
 		return sunk;
@@ -93,11 +88,26 @@ public enum Ship {
 	}
 	
 	public void printCoordinates() {
-		System.out.println(this.name());
+		System.out.println(name);
 		for(int i = 0; i < this.coordinates.length; i = i+2) {
 			System.out.print(coordinates[i] +","+ coordinates[i+1] + " - ");
 		}
 		System.out.println();
+	}
+	
+	public String getName() {
+		return name;
+	}
+
+
+
+
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		
+		
+		return null;
+		
 	}
 
 	

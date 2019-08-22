@@ -92,6 +92,7 @@ public class PlaceShipsLayoutController {
 		System.out.println(gd.getOwnFleet().size());
 		}
 		showShipData();
+		
 	}
 	
 	public void handleClearButton() {

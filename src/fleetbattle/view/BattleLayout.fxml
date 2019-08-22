@@ -30,7 +30,7 @@
                         <Label text="Turn:" />
                         <Label text="Enemy's fleet:" GridPane.rowIndex="1" />
                         <Label text="Your fleet:" GridPane.rowIndex="2" />
-                        <Label fx:id="turn" GridPane.columnIndex="1" />
+                        <Label fx:id="turnCounter" GridPane.columnIndex="1" />
                         <Label fx:id="oppFleet" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                         <Label fx:id="yourFleet" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                      </children>

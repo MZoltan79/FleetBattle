@@ -26,19 +26,18 @@ public class AutoPlaceOpponent {
 	
 	private static boolean[][]table = new boolean[10][10];
 	
-
 	protected static Random rnd = new Random(); 
-	
+
 	private ArrayList<Ship>fleet = new ArrayList<Ship>(); 
-
-	protected static ArrayList<Integer[]> fieldsCoordinates = new ArrayList<>();
 	
-	protected ArrayList<Integer[]> freeFields = new ArrayList<>();
+	protected static ArrayList<Integer[]> fieldsCoordinates = new ArrayList<>();
 
+	protected ArrayList<Integer[]> freeFields = new ArrayList<>();
+	
 	public ArrayList<Ship> getFleet() {
 		return fleet;
 	}
-	
+
 	public void setupOfFields() { 
 		for(int i = 0; i < 10; i++) {
 			for(int j = 0; j < 10; j++) {
@@ -46,32 +45,34 @@ public class AutoPlaceOpponent {
 			}
 		}
 	}
+	
+
+	
 	private void carrier() {
-		carrier = Ship.CARRIER;
+		carrier = new Ship("carrier");
 		carrier.setVertical(randomDirection());
 	}
 
 	private void destroyer() {
-		destroyer = Ship.DESTROYER;
+		destroyer = new Ship("destroyer");
 		destroyer.setVertical(randomDirection());
 	}
 
 	private void submarine() {
-		submarine = Ship.SUBMARINE;
+		submarine = new Ship("submarine");
 		submarine.setVertical(randomDirection());
 	}
 
 	private void cruiser() {
-		cruiser = Ship.CRUISER;
+		cruiser = new Ship("cruiser");
 		cruiser.setVertical(randomDirection());
 	}
 
 	private void patrolBoat() {
-		patrolBoat = Ship.PATROLBOAT;
+		patrolBoat = new Ship("patrolboat");
 		patrolBoat.setVertical(randomDirection());
 	}
 
-	
 
 	private void checkFields(Ship ship) {
 		for(int i = 0; i < fieldsCoordinates.size(); i++) {
@@ -91,6 +92,7 @@ public class AutoPlaceOpponent {
 			}
 		}
 	}
+	
 	private boolean checkFieldsByVerticalDirection(Integer[] startPoint, Ship ship) {
 		int size = ship.getSize();
 		for(int i = 0; i < size; i++) {
@@ -110,6 +112,7 @@ public class AutoPlaceOpponent {
 		}
 		return true;
 	}
+	
 	private boolean checkStartPointByVerticalDirection(Integer[] startPoint, Ship ship) {
 		if(startPoint[0] > 9-(ship.getSize()-1)) return false;
 		return true;
@@ -120,7 +123,8 @@ public class AutoPlaceOpponent {
 		return true;
 	}
 	
-	private boolean randomDirection() { 		return rnd.nextBoolean();
+	private boolean randomDirection() { 		
+		return rnd.nextBoolean();
 	}
 
 	private void randomize(Ship ship) {

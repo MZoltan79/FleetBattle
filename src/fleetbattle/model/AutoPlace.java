@@ -40,7 +40,7 @@ public class AutoPlace {
 
 	protected static Random rnd = new Random(); // ezt nem kell magyarázni :)
 	
-	private ArrayList<Ship>fleet = new ArrayList<Ship>(); // ez tárolja a már letett hajókat.
+	private static ArrayList<Ship>fleet = new ArrayList<Ship>(); // ez tárolja a már letett hajókat.
 	
 	/*
 	 *  A fieldsCoordinates és freeFields listák szintén az elrendezéshez kellenek.
@@ -100,27 +100,27 @@ public class AutoPlace {
 	 *	Hajók létrhozása, és az irányuk beállítésa véletlenszerúen 	
 	 */
 	private void carrier() {
-		carrier = Ship.CARRIER;
+		carrier = new Ship("carrier");
 		carrier.setVertical(randomDirection());
 	}
 
 	private void destroyer() {
-		destroyer = Ship.DESTROYER;
+		destroyer = new Ship("destroyer");
 		destroyer.setVertical(randomDirection());
 	}
 
 	private void submarine() {
-		submarine = Ship.SUBMARINE;
+		submarine = new Ship("submarine");
 		submarine.setVertical(randomDirection());
 	}
 
 	private void cruiser() {
-		cruiser = Ship.CRUISER;
+		cruiser = new Ship("cruiser");
 		cruiser.setVertical(randomDirection());
 	}
 
 	private void patrolBoat() {
-		patrolBoat = Ship.PATROLBOAT;
+		patrolBoat = new Ship("patrolboat");
 		patrolBoat.setVertical(randomDirection());
 	}
 
@@ -328,36 +328,36 @@ public class AutoPlace {
 		}
 	}
 	
-	private void checkShip(Ship ship) {
-		int tmp[] = ship.getCoordinates();
-		if(ship.isVertical() == true) {
-			for(int i = ship.getCoordinates()[0]; i < ship.getCoordinates()[2]+1; i++) {
-				if(table[i][ship.getCoordinates()[1]] == false) ship.hit--;
-			}
-		} else {
-			for(int i = ship.getCoordinates()[1]; i < ship.getCoordinates()[3]+1;i++) {
-				if(table[ship.getCoordinates()[0]][i] == false) ship.hit--;
-			}
-		}
-		if (ship.getHit()==0) {
-			ship.setSunk();
-			if(ship.isVertical() == true) {
-				for(int i = ship.getCoordinates()[0]; i < ship.getCoordinates()[2]+1; i++) {
-					visual[i][ship.getCoordinates()[1]] = sunk;
-				}
-			} else {
-				for(int i = ship.getCoordinates()[1]; i < ship.getCoordinates()[3]+1;i++) {
-					visual[ship.getCoordinates()[0]][i] = sunk;
-				}
-			}
-		}
-	}
+//	private void checkShip(Ship ship) {
+//		int tmp[] = ship.getCoordinates();
+//		if(ship.isVertical() == true) {
+//			for(int i = ship.getCoordinates()[0]; i < ship.getCoordinates()[2]+1; i++) {
+//				if(table[i][ship.getCoordinates()[1]] == false) ship.hit--;
+//			}
+//		} else {
+//			for(int i = ship.getCoordinates()[1]; i < ship.getCoordinates()[3]+1;i++) {
+//				if(table[ship.getCoordinates()[0]][i] == false) ship.hit--;
+//			}
+//		}
+//		if (ship.getHit()==0) {
+//			ship.setSunk();
+//			if(ship.isVertical() == true) {
+//				for(int i = ship.getCoordinates()[0]; i < ship.getCoordinates()[2]+1; i++) {
+//					visual[i][ship.getCoordinates()[1]] = sunk;
+//				}
+//			} else {
+//				for(int i = ship.getCoordinates()[1]; i < ship.getCoordinates()[3]+1;i++) {
+//					visual[ship.getCoordinates()[0]][i] = sunk;
+//				}
+//			}
+//		}
+//	}
 	
-	private void checkAll() {
-		for(Ship s:fleet) {
-			checkShip(s);
-		}
-	}
+//	private void checkAll() {
+//		for(Ship s:fleet) {
+//			checkShip(s);
+//		}
+//	}
 	
 	public Ship getShip(Ship ship) {
 		return ship;
@@ -387,12 +387,12 @@ public class AutoPlace {
 			System.out.println();
 		}
 		fleet.forEach(e -> {
-			System.out.println(e.name() + ": " + e.getCoordinates()[0] + ", " +
+			System.out.println(e.getName() + ": " + e.getCoordinates()[0] + ", " +
 					e.getCoordinates()[1] + ", " +
 					e.getCoordinates()[e.getCoordinates().length-2] + ", " +
 					e.getCoordinates()[e.getCoordinates().length-1]);
 		});
-		System.out.println(carrier.name());
+		System.out.println("carrier");
 		reset();
 		System.out.println(table[0][0]);
 		System.out.println("freefields size = " + freeFields.size());
@@ -416,11 +416,17 @@ public class AutoPlace {
 		});
 	}
 	
-//	public static void main(String[] args) {
-		
+	public static void main(String[] args) {
+//		GameData gd = GameData.getInstance();
+//		GamePlay gp = GamePlay.getInstance();
 //		AutoPlace game = new AutoPlace();
 //		game.setupOfFields();
 //		game.placeAll();
+//		System.out.println(fleet);
+//		System.out.println(fleet.get(0));
+//		System.out.println(gp.buildOwnData());
+		
+		
 //		System.out.println(table[0][0]);
 //		System.out.println("freefields size = " + game.freeFields.size());
 //		System.out.println("fleet size = " + fleet.size());
@@ -463,7 +469,7 @@ public class AutoPlace {
 //					e.getCoordinates()[2] + ", " +
 //					e.getCoordinates()[3]);
 //		});
-//	}
+	}
 
 	private AutoPlace() {
 		this.freeFields = new ArrayList<>();

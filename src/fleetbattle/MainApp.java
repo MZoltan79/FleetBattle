@@ -10,6 +10,7 @@ import fleetbattle.model.GamePlay;
 import fleetbattle.model.Player;
 import fleetbattle.model.Ship;
 import fleetbattle.view.BattleLayoutController;
+import fleetbattle.view.GameOverLayoutController;
 import fleetbattle.view.PlaceShipsLayoutController;
 import fleetbattle.view.WelcomeLayoutController;
 import javafx.application.Application;
@@ -26,6 +27,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 
@@ -43,13 +45,14 @@ public class MainApp extends Application {
 	GameData gd;
 	
 	Ship tempShip = null;
-	Ship carrier = Ship.CARRIER;
-	Ship destroyer = Ship.DESTROYER;
-	Ship submarine = Ship.SUBMARINE;
-	Ship cruiser = Ship.CRUISER;
-	Ship patrolBoat = Ship.PATROLBOAT;
+	Ship carrier = new Ship("carrier");
+	Ship destroyer = new Ship("destroyer");
+	Ship submarine = new Ship("submarine");
+	Ship cruiser = new Ship("cruiser");
+	Ship patrolBoat = new Ship("patrolboat2");
 	ArrayList<Ship> fleet = new ArrayList<>();
 	ArrayList<Ship> ownFleet = new ArrayList<>();
+	
 
 	Player player1;
 	Player player2;
@@ -231,6 +234,29 @@ public class MainApp extends Application {
 		}
 	}
 	
+	public void showGameOverLayout() {
+		try {
+			AnchorPane gameOverLayout;
+			FXMLLoader loader = new FXMLLoader();
+			loader.setLocation(MainApp.class.getResource("view/GameOverLayout.fxml"));
+			gameOverLayout = loader.load();
+			
+			Stage resultStage = new Stage();
+			resultStage.setTitle("Battle results");
+			resultStage.initModality(Modality.WINDOW_MODAL);
+//			resultStage.initOwner(primaryStage);
+			Scene scene = new Scene(gameOverLayout);
+			resultStage.setScene(scene);
+			GameOverLayoutController controller = loader.getController();
+//			controller.setResultStage(resultStage);
+			resultStage.show();
+			controller.showResults();
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	
 	public String getShipName() {
 		FXMLLoader loader = new FXMLLoader();
@@ -310,7 +336,7 @@ public class MainApp extends Application {
 			}
 		}
 		if(gd.getOwnFleet().size() != 0) {
-			gd.getOwnFleet().removeAll(fleet);
+			gd.getOwnFleet().removeAll(gd.getOwnFleet());
 		}
 		drawTable();
 	}
