@@ -4,6 +4,7 @@ package fleetbattle.view;
 
 import fleetbattle.MainApp;
 import fleetbattle.model.GameData;
+import fleetbattle.model.GamePlay;
 import fleetbattle.model.Ship;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;

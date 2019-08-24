@@ -8,6 +8,7 @@ public class GameData {
 	ArrayList<Ship> opponentsFleet;
 	boolean[][] ownTable;
 	boolean[][] opponentsTable;
+	boolean connected;
 	
 	private static GameData instance;
 	
@@ -23,6 +24,7 @@ public class GameData {
 		opponentsFleet = new ArrayList<Ship>();
 		ownTable = new boolean[10][10];
 		opponentsTable = new boolean[10][10];
+		connected = false;
 	}
 
 	public ArrayList<Ship> getOwnFleet() {
@@ -73,6 +75,14 @@ public class GameData {
 	
 	public void addShipToOppFleet(Ship ship) {
 		opponentsFleet.add(ship);
+	}
+	
+	public void setConnected(boolean connected) {
+		this.connected = connected;
+	}
+	
+	public boolean isConnected() {
+		return connected;
 	}
 
 	

@@ -417,30 +417,31 @@ public class AutoPlace {
 	}
 	
 	public static void main(String[] args) {
-//		GameData gd = GameData.getInstance();
+		
+		GameData gd = GameData.getInstance();
 //		GamePlay gp = GamePlay.getInstance();
-//		AutoPlace game = new AutoPlace();
-//		game.setupOfFields();
-//		game.placeAll();
-//		System.out.println(fleet);
-//		System.out.println(fleet.get(0));
+		AutoPlace game = new AutoPlace();
+		game.setupOfFields();
+		game.placeAll();
+		System.out.println(fleet.get(4));
+//		System.out.println(gd.getOwnFleet().get(1));
 //		System.out.println(gp.buildOwnData());
 		
 		
-//		System.out.println(table[0][0]);
-//		System.out.println("freefields size = " + game.freeFields.size());
-//		System.out.println("fleet size = " + fleet.size());
-//		System.out.println(fieldsCoordinates.get(1)[0] + ", " + fieldsCoordinates.get(1)[1]);
-//		for(int i = 0; i < 10; i++) {
-//			for(int j = 0; j < 10; j++) {
-//				if(table[i][j]==true) {
-//					System.out.print(hit);
-//				} else {
-//					System.out.print(water);
-//				}
-//			}
-//			System.out.println();
-//		}
+		System.out.println(table[0][0]);
+		System.out.println("freefields size = " + game.freeFields.size());
+		System.out.println("fleet size = " + fleet.size());
+		System.out.println(fieldsCoordinates.get(1)[0] + ", " + fieldsCoordinates.get(1)[1]);
+		for(int i = 0; i < 10; i++) {
+			for(int j = 0; j < 10; j++) {
+				if(table[i][j]==true) {
+					System.out.print(hit);
+				} else {
+					System.out.print(water);
+				}
+			}
+			System.out.println();
+		}
 //		fleet.forEach(e -> {
 //			System.out.println(e.name() + ": " + e.getCoordinates()[0] + ", " +
 //					e.getCoordinates()[1] + ", " +

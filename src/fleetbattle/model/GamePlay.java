@@ -3,12 +3,11 @@ package fleetbattle.model;
 import java.util.ArrayList;
 import java.util.Random;
 
-import javax.sound.midi.Receiver;
-
 import communication.Connection;
 import fleetbattle.MainApp;
 import fleetbattle.view.BattleLayoutController;
 import fleetbattle.view.GameOverLayoutController;
+import javafx.application.Platform;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseEvent;
@@ -35,7 +34,6 @@ public class GamePlay extends BorderPane{
 	private GameOverLayoutController goController;
 	Connection conn;
 	
-	private boolean connected;
 	private boolean[][] ownHits;
 	private boolean[][] opponentsHits;
 	private boolean turn;
@@ -60,9 +58,13 @@ public class GamePlay extends BorderPane{
 		ownTurnWasFirst = turn;
 		mainApp = new MainApp();
 		gd = GameData.getInstance();
-		ao = AutoPlaceOpponent.getInstance();
-		ao.setupOfFields();
-		ao.placeAll();
+		conn = Connection.getInstance();
+		Connection.sendData = buildOwnData();
+		if(mainApp.isSinglePlayer()) {
+			ao = AutoPlaceOpponent.getInstance();
+			ao.setupOfFields();
+			ao.placeAll();
+		}
 		ownFleet = gd.getOwnFleet();
 		opponentsHits = new boolean[10][10];
 		ownHits = new boolean[10][10];
@@ -71,6 +73,10 @@ public class GamePlay extends BorderPane{
 		gc = canvas.getGraphicsContext2D();
 		opponentsFleet = gd.getOpponentsFleet();
 		goController = new GameOverLayoutController();
+//		if(!mainApp.isSinglePlayer()) {
+//			conn.setDaemon(true);
+//			conn.start();
+//		}
 	}
 	
 
@@ -90,29 +96,52 @@ public class GamePlay extends BorderPane{
 	}
 	
 	public void startMultiPlayer() {
-		conn = new Connection();
-		conn.setDaemon(true);
-		conn.start();
-		String ownData = buildOwnData();
-		initializeOpponentsDataMP();
-		conn.sendData(ownData);
-		controller.drawOwnCanvas();
-		drawOpponentsTable();
+//		conn.setDaemon(true);
+//		conn.start();
+//		try {
+//			Thread.sleep(3100);
+//		} catch (InterruptedException e) {
+//			e.printStackTrace();
+//		}
+		conn.sendData();
+		Platform.runLater(new Runnable() {
+			
+			@Override
+			public void run() {
+				System.out.println("from GamePlay: "+conn.getReceivedData());
+				controller.drawOwnCanvas();
+				drawOpponentsTable();
+				
+			}
+		});
 		System.out.println();
 		ownTurn();
 	}
 	public void initializeOpponentsDataMP() {
-		String opponentsData = conn.receiveData();
-		String[] tmp = opponentsData.split(";");
+		String data = Connection.receivedData;
+		String[] tmp = data.split(";");
+		Ship carrier = new Ship("carrier");
+		Ship destroyer = new Ship("carrier");
+		Ship submarine = new Ship("carrier");
+		Ship cruiser = new Ship("carrier");
+		Ship patrolboat = new Ship("carrier");
+		Ship[] tempFleet = new Ship[5];
+		tempFleet[0] = carrier;
+		tempFleet[1] = destroyer;
+		tempFleet[2] = submarine;
+		tempFleet[3] = cruiser;
+		tempFleet[4] = patrolboat;
 		for(int i = 0; i < 5; i++) {
-			gd.opponentsFleet.add(new Ship("carrier"));
-			gd.opponentsFleet.get(i).setVertical(Boolean.parseBoolean(tmp[0]));									// ship isVertical()
-			gd.opponentsFleet.get(i).setStartpoint(Integer.parseInt(tmp[1]), Integer.parseInt(tmp[2]));			// ship getCoordinates() (index: 0 és 1)
-			gd.opponentsFleet.get(i).setCoordinates(Integer.parseInt(tmp[1]), Integer.parseInt(tmp[2]));
+			gd.opponentsFleet.add(tempFleet[i]);
+			gd.opponentsFleet.get(i).setVertical(Boolean.parseBoolean(tmp[0 + (i*3)]));									// ship isVertical()
+			gd.opponentsFleet.get(i).setStartpoint(Integer.parseInt(tmp[1+ (i*3)]), Integer.parseInt(tmp[2+ (i*3)]));			// ship getCoordinates() (index: 0 és 1)
+			gd.opponentsFleet.get(i).setCoordinates(Integer.parseInt(tmp[1+ (i*3)]), Integer.parseInt(tmp[2+ (i*3)]));
 		}
+		int x = 0;
 		for(int i = 0; i < 10; i++) {
 			for(int j = 0; j < 10; j++) {
-				gd.opponentsTable[i][j] = Boolean.parseBoolean(tmp[3+i]);
+				gd.opponentsTable[i][j] = Boolean.parseBoolean(tmp[15+x]);
+				x++;
 			}
 		}
 	}
@@ -121,11 +150,11 @@ public class GamePlay extends BorderPane{
 		StringBuilder data = new StringBuilder();
 		for(int i = 0; i < 5; i++) {
 			data.append(gd.getOwnFleet().get(i).isVertical() + ";" + gd.getOwnFleet().get(i).getCoordinates()[0] + 
-					";" + gd.getOwnFleet().get(i).getCoordinates()[1]);
+					";" + gd.getOwnFleet().get(i).getCoordinates()[1] + ";");
 		}
 		for(int i = 0; i < 10; i++) {
 			for(int j = 0; j < 10; j++) {
-				data.append(";" + gd.getOwnTable()[i][j]);
+				data.append(gd.getOwnTable()[i][j] + ";");
 			}
 		}
 		
@@ -366,6 +395,9 @@ public class GamePlay extends BorderPane{
 	public void setController(BattleLayoutController controller) {
 		this.controller = controller;
 	}
+	
+
+
 	
 	
 	

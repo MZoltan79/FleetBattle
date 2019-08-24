@@ -2,6 +2,7 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -10,7 +11,8 @@
 
 <AnchorPane minHeight="400.0" minWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fleetbattle.view.GameOverLayoutController">
    <children>
-      <GridPane layoutX="31.0" layoutY="270.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0">
+      <ImageView fx:id="resultPicture" fitHeight="300.0" fitWidth="600.0" layoutX="193.0" layoutY="150.0" opacity="0.44" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="3.0" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="0.0" />
+      <GridPane layoutX="31.0" layoutY="270.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="40.0">
         <columnConstraints>
           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -21,14 +23,14 @@
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <Label text="Label" />
+            <Label fx:id="player1Small" text="Label" />
             <Label text="Games played:" GridPane.rowIndex="1" />
             <Label text="Games won:" GridPane.rowIndex="2" />
-            <Label text="Label" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <Label text="Label" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <Label fx:id="player1GamesPlayed" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <Label fx:id="player1GamesWon" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="2" />
          </children>
       </GridPane>
-      <GridPane layoutX="343.0" layoutY="262.0" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="20.0">
+      <GridPane layoutX="343.0" layoutY="262.0" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="0.0">
          <columnConstraints>
             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -39,28 +41,18 @@
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
          </rowConstraints>
          <children>
-            <Label text="Label" />
+            <Label fx:id="player2Small" text="Label" />
             <Label text="Games played:" GridPane.rowIndex="1" />
             <Label text="Games won:" GridPane.rowIndex="2" />
-            <Label text="Label" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <Label text="Label" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <Label fx:id="player2GamesPlayed" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <Label fx:id="player2GamesWon" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="2" />
          </children>
       </GridPane>
-      <Label layoutX="32.0" layoutY="28.0" text="Label">
-         <font>
-            <Font size="26.0" />
-         </font>
-      </Label>
-      <Label layoutX="528.0" layoutY="28.0" text="Label" AnchorPane.rightAnchor="20.0">
-         <font>
-            <Font size="26.0" />
-         </font>
-      </Label>
       <Label fx:id="display" alignment="CENTER" contentDisplay="CENTER" layoutX="282.0" layoutY="72.0" textFill="RED" AnchorPane.bottomAnchor="200.0" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="100.0" AnchorPane.topAnchor="100.0">
          <font>
             <Font name="System Bold Italic" size="36.0" />
          </font>
       </Label>
-      <Button layoutX="269.0" layoutY="343.0" mnemonicParsing="false" text="Back" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="275.0" AnchorPane.rightAnchor="275.0" />
+      <Button fx:id="continueButton" layoutX="269.0" layoutY="343.0" mnemonicParsing="false" text="Continue" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="265.0" AnchorPane.rightAnchor="265.0" />
    </children>
 </AnchorPane>

@@ -3,6 +3,7 @@ package fleetbattle;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import communication.Connection;
 import fleetbattle.model.AutoPlaceOpponent;
 import fleetbattle.model.AutoPlace;
 import fleetbattle.model.GameData;
@@ -56,7 +57,7 @@ public class MainApp extends Application {
 
 	Player player1;
 	Player player2;
-
+	Connection conn;
 	private boolean[][] table;
 	private boolean singlePlayer = true;;
 	static int x = 0;
@@ -95,6 +96,9 @@ public class MainApp extends Application {
 			scene.getStylesheets().add(getClass().getResource("view/application.css").toExternalForm());
 			primaryStage.setScene(scene);
 			primaryStage.show();
+			conn = Connection.getInstance();
+			conn.setDaemon(true);
+			conn.start();
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -228,7 +232,11 @@ public class MainApp extends Application {
 			BattleLayoutController bController = loader.getController();
 			bController.setMainApp(this);
 			bController.showTurnStat();
-			gp.startSinglePlayer(); // !!!!
+			if(singlePlayer) {
+				gp.startSinglePlayer();
+			} else {
+				gp.startMultiPlayer();
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -244,11 +252,12 @@ public class MainApp extends Application {
 			Stage resultStage = new Stage();
 			resultStage.setTitle("Battle results");
 			resultStage.initModality(Modality.WINDOW_MODAL);
-//			resultStage.initOwner(primaryStage);
+			resultStage.initOwner(primaryStage);
 			Scene scene = new Scene(gameOverLayout);
 			resultStage.setScene(scene);
 			GameOverLayoutController controller = loader.getController();
-//			controller.setResultStage(resultStage);
+			controller.setResultStage(resultStage);
+			controller.setMainApp(this);
 			resultStage.show();
 			controller.showResults();
 			
