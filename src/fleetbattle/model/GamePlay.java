@@ -169,6 +169,10 @@ public class GamePlay extends BorderPane{
 	
 	
 	public void mouseMovedOwnHit(MouseEvent ev) {
+		
+		if(turns == 1) {
+			initializeOpponentsDataMP();
+		}
 		x = (int)((ev.getX()-51)/30);
 		y = (int)(ev.getY()-51)/30;
 		
@@ -196,7 +200,9 @@ public class GamePlay extends BorderPane{
 			changeTurn();
 			if(!ownTurnWasFirst) turns++;
 			controller.showTurnStat();
-			aITurn();
+			if(mainApp.isSinglePlayer()) {
+				aITurn();
+			}
 		} else if(ownHits[x][y] == false && gd.getOpponentsTable()[x][y] == true) {
 			ownHits[x][y] = true;
 			controller.setHitIndicator("Hit!");
