@@ -95,21 +95,25 @@ public class BattleLayoutController {
 	}
 	
 	public void drawOpponentsHit() {
+//		showTurnStat();
 		Font font = new Font(15);
 		gc.setFont(font);
+		if(gp.getA() > -1 && gp.getB() > -1) {
+			
 		 if(gp.getOpponentsHits()[gp.getA()][gp.getB()] == false && gd.getOwnTable()[gp.getA()][gp.getB()] == false) {
-			gp.getOpponentsHits()[gp.getA()][gp.getB()] = true;
-			gc.setFill(Color.DARKRED);
-			gc.fillText("X", (gp.getA()*15)+26, (gp.getB()*15)+38);
-			gp.changeTurn();
-			if(gp.isOwnTurnWasFirst()) gp.increaseTurns();
-			showTurnStat();
+			 gp.getOpponentsHits()[gp.getA()][gp.getB()] = true;
+			 gc.setFill(Color.DARKRED);
+			 gc.fillText("X", (gp.getA()*15)+26, (gp.getB()*15)+38);
+			 gp.changeTurn();
+			 if(gp.isOwnTurnWasFirst()) gp.increaseTurns();
+//				showTurnStat();
 		 	} else if(gp.getOpponentsHits()[gp.getA()][gp.getB()] == false && gd.getOwnTable()[gp.getA()][gp.getB()] == true) {
-			gp.getOpponentsHits()[gp.getA()][gp.getB()] = true;
-			gc.setFill(Color.DARKRED);
-			gc.fillOval((gp.getA()*15)+25, (gp.getB()*15)+25,14,14);
-			showTurnStat();
-			gp.aITurn();;
+		 		gp.getOpponentsHits()[gp.getA()][gp.getB()] = true;
+		 		gc.setFill(Color.DARKRED);
+		 		gc.fillOval((gp.getA()*15)+25, (gp.getB()*15)+25,14,14);
+//		 		showTurnStat();
+//		 		gp.opponentsTurn();
+		 	}
 		}
 		
 	}

@@ -3,7 +3,6 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.RadioButton?>
@@ -44,8 +43,7 @@
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                      </padding>
                   </TextField>
-                  <CheckBox id="guest" fx:id="guestCheckBox" layoutX="21.0" layoutY="104.0" mnemonicParsing="false" onAction="#initGuestNoteLabel" text="Play as guest" AnchorPane.leftAnchor="10.0" />
-                  <Button fx:id="loginButton" layoutX="182.0" layoutY="100.0" mnemonicParsing="false" prefWidth="60.0" text="Login" AnchorPane.rightAnchor="8.0" />
+                  <Button fx:id="loginButton" layoutX="182.0" layoutY="100.0" mnemonicParsing="false" onAction="#handleLoginButton" prefWidth="60.0" text="Login" AnchorPane.rightAnchor="8.0" />
                   <PasswordField fx:id="password" layoutX="76.0" layoutY="65.0" AnchorPane.leftAnchor="79.0" AnchorPane.rightAnchor="6.0" />
                   <RadioButton fx:id="singleplayer" layoutX="13.0" layoutY="179.0" mnemonicParsing="false" onAction="#handleSinglePlayerRadioButton" selected="true" text="Singleplayer" AnchorPane.leftAnchor="10.0">
                      <toggleGroup>
@@ -60,6 +58,7 @@
                      </font>
                   </Label>
                   <Button fx:id="placeShips" layoutX="150.0" layoutY="246.0" mnemonicParsing="false" onAction="#handlePlaceShipsButton" text="Place ships" AnchorPane.rightAnchor="8.0" />
+                  <Button fx:id="newPlayerButton" layoutX="80.0" layoutY="100.0" mnemonicParsing="false" onAction="#handleNewPlayerButton" text="New Player" AnchorPane.rightAnchor="79.0" />
                </children>
             </AnchorPane>
           <AnchorPane fx:id="rightPane" minHeight="0.0" minWidth="350.0" prefHeight="160.0" prefWidth="100.0">

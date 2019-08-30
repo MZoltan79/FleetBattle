@@ -17,6 +17,14 @@ public class Player {
 		this.gamesWon = 0;
 	}
 
+	public Player(String nickName, int gamesPlayed, int gamesWon) {
+		this.nickName = nickName;
+		this.hits = 0;
+		this.guest = false;
+		this.gamesPlayed = gamesPlayed;
+		this.gamesWon = gamesWon;
+	}
+
 	@Override
 	public String toString() {
 		return nickName + ";" + gamesPlayed + ";" + gamesWon ;

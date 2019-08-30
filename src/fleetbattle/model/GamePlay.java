@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import communication.Connection;
+import data.PlayersData;
 import fleetbattle.MainApp;
 import fleetbattle.view.BattleLayoutController;
 import fleetbattle.view.GameOverLayoutController;
@@ -14,6 +15,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import server.Server;
 
 public class GamePlay extends BorderPane{
 	
@@ -28,6 +30,7 @@ public class GamePlay extends BorderPane{
 	private MainApp mainApp;
 	private AutoPlaceOpponent ao;
 	GameData gd;
+	PlayersData pd;
 	
 	private Random rnd = new Random();
 	private BattleLayoutController controller;
@@ -38,8 +41,10 @@ public class GamePlay extends BorderPane{
 	private boolean[][] opponentsHits;
 	private boolean turn;
 	private boolean ownTurnWasFirst;
-	private int a = 0;
-	private int b = 0;
+	private int a;
+	private int b;
+	private int prevA;
+	private int prevB;
 	private Integer x = 10000;
 	private Integer y = 10000;
 	private Integer turns;
@@ -53,13 +58,18 @@ public class GamePlay extends BorderPane{
 	private GamePlay() {
 		this.setMinSize(398, 398);
 		this.setPrefSize(USE_COMPUTED_SIZE, USE_COMPUTED_SIZE);
+		pd = PlayersData.getInstance();
+		a = -1;
+		b = -1;
+		prevA = a;
+		prevB = b;
 		turns = 1;
 		turn = rnd.nextBoolean();
 		ownTurnWasFirst = turn;
 		mainApp = new MainApp();
 		gd = GameData.getInstance();
 		conn = Connection.getInstance();
-		Connection.sendData = buildOwnData();
+//		Connection.sendData = buildOwnData();
 		if(mainApp.isSinglePlayer()) {
 			ao = AutoPlaceOpponent.getInstance();
 			ao.setupOfFields();
@@ -90,20 +100,20 @@ public class GamePlay extends BorderPane{
 			drawOpponentsTable();
 			System.out.println();
 			if(!turn) {
-				aITurn();
+				opponentsTurn();
 			} 
 			ownTurn();
 	}
 	
 	public void startMultiPlayer() {
-//		conn.setDaemon(true);
-//		conn.start();
-//		try {
-//			Thread.sleep(3100);
-//		} catch (InterruptedException e) {
-//			e.printStackTrace();
-//		}
-		conn.sendData();
+		
+		initializeOpponentsDataMP();
+		if(pd.isBeginner()) {
+			turn = true;
+		} else {
+			turn = false;
+		}
+		System.out.println("turn:"+turn);
 		Platform.runLater(new Runnable() {
 			
 			@Override
@@ -114,10 +124,13 @@ public class GamePlay extends BorderPane{
 				
 			}
 		});
-		System.out.println();
+		System.out.println("ownFleetsize: " + countFleetSize(ownFleet));
+		System.out.println("opponentsFleetsize: " + countFleetSize(opponentsFleet));
+		opponentsHitMP();
 		ownTurn();
 	}
 	public void initializeOpponentsDataMP() {
+		System.out.println("initializoppData előtt a receiveData: " + conn.getReceivedData());
 		String data = Connection.receivedData;
 		String[] tmp = data.split(";");
 		Ship carrier = new Ship("carrier");
@@ -169,12 +182,9 @@ public class GamePlay extends BorderPane{
 	
 	
 	public void mouseMovedOwnHit(MouseEvent ev) {
-		
-		if(turns == 1) {
-			initializeOpponentsDataMP();
-		}
 		x = (int)((ev.getX()-51)/30);
 		y = (int)(ev.getY()-51)/30;
+		
 		
 		drawOwnHit();
 		checkOppFleet();
@@ -185,6 +195,40 @@ public class GamePlay extends BorderPane{
 			mainApp.showGameOverLayout();
 		}
 	
+	}
+	
+	public void opponentsHitMP() {
+	
+		Thread th = new Thread(new Runnable() {
+		
+			@Override
+			public void run() {
+				System.out.println("opponentshitMP");
+				controller.checkOwnFleet();
+				String[] tmp = new String[2];
+				while(true) {
+					try {
+						Thread.sleep(200);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					String data = conn.getReceivedData();
+					if(data.length() < 6) {
+						tmp = data.split(";");
+						a = Integer.parseInt(tmp[0]);
+						b = Integer.parseInt(tmp[1]);
+						if(a > -1 && b > -1) {
+						controller.checkOwnFleet();
+						controller.drawOpponentsHit();
+						controller.drawOwnSunkedShips();
+						}
+					}
+						
+				}
+			}
+		});
+		th.setDaemon(true);
+		th.start();
 	}
 
 	public void drawOwnHit() {
@@ -198,10 +242,17 @@ public class GamePlay extends BorderPane{
 			gc.setFill(Color.DARKRED);
 			gc.fillText("X", (x*30)+52, (y*30)+75);
 			changeTurn();
-			if(!ownTurnWasFirst) turns++;
+			if(!ownTurnWasFirst && mainApp.isSinglePlayer()) {
+				turns++;
+			} else {
+				turns++;
+			}
 			controller.showTurnStat();
+			if(!mainApp.isSinglePlayer()) {
+				conn.send(x + ";" + y);
+			}
 			if(mainApp.isSinglePlayer()) {
-				aITurn();
+				opponentsTurn();
 			}
 		} else if(ownHits[x][y] == false && gd.getOpponentsTable()[x][y] == true) {
 			ownHits[x][y] = true;
@@ -210,6 +261,9 @@ public class GamePlay extends BorderPane{
 			gc.fillOval((x*30)+49, (y*30)+49,28,28);
 			ownHits[x][y] = true;
 			controller.showTurnStat();
+			if(!mainApp.isSinglePlayer()) {
+				conn.send(x + ";" + y);
+			}
 //			if(countFleetSize(gd.getOwnFleet()) < 1 || countFleetSize(gd.getOpponentsFleet()) < 1) {
 //				mainApp.showGameOverLayout();
 //			}
@@ -298,32 +352,22 @@ public class GamePlay extends BorderPane{
 		}
 	}
 
-	public int getA() {
-		return a;
-	}
-
-
-	public int getB() {
-		return b;
-	}
-
-
-	public boolean[][] getOpponentsHits() {
-		return opponentsHits;
-	}
-
-	public void aiHit() {
-		a = rnd.nextInt(10);
-		b = rnd.nextInt(10);
-		if(opponentsHits[a][b] && turns < 87) {
-			aiHit();
+	public void opponentsHit() {
+		if(mainApp.isSinglePlayer()) {
+			a = rnd.nextInt(10);
+			b = rnd.nextInt(10);
+			if(opponentsHits[a][b] && turns < 87) {
+				opponentsHit();
+			}
 		}
 	}
 	
-	public void aITurn() {
-		aiHit();
-		controller.checkOwnFleet();
-		controller.updateMPGui();
+	public void opponentsTurn() {
+		if(mainApp.isSinglePlayer()) {
+			opponentsHit();
+			controller.checkOwnFleet();
+			controller.updateMPGui();
+		}
 	}
 
 	
@@ -400,6 +444,24 @@ public class GamePlay extends BorderPane{
 	
 	public void setController(BattleLayoutController controller) {
 		this.controller = controller;
+	}
+	
+	public int getA() {
+		return a;
+	}
+
+
+	public int getB() {
+		return b;
+	}
+
+
+	public boolean[][] getOpponentsHits() {
+		return opponentsHits;
+	}
+
+	public ArrayList<Ship> getOwnFleet(){
+		return ownFleet;
 	}
 	
 

@@ -2,6 +2,7 @@ package fleetbattle.view;
 
 
 
+import communication.Connection;
 import fleetbattle.MainApp;
 import fleetbattle.model.GameData;
 import fleetbattle.model.GamePlay;
@@ -12,7 +13,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 
 public class PlaceShipsLayoutController {
+	GamePlay gp;
 	GameData gd;
+	Connection conn;
 	
 	public PlaceShipsLayoutController() {
 		
@@ -20,6 +23,8 @@ public class PlaceShipsLayoutController {
 	@FXML
 	public void initialize() {
 		gd = GameData.getInstance();
+		conn = Connection.getInstance();
+		gp = GamePlay.getInstance();
 	}
 	
 	
@@ -66,6 +71,10 @@ public class PlaceShipsLayoutController {
 	
 	public void handleReadyButton() {
 		if(gd.getOwnFleet().size() > 4) {
+			if(!mainApp.isSinglePlayer()) {
+				Connection.sendData = gp.buildOwnData();
+				conn.sendData();
+			}
 			mainApp.showWelcomeLayout();
 		}
 		

@@ -19,6 +19,9 @@ public class Connection extends Thread {
 	private PrintWriter pw;
 	public static String sendData = null;
 	public static String receivedData = null;
+	public static String loginData = null;
+
+	public static boolean login = false;
 	private boolean connected;
 
 	private static Connection instance;
@@ -39,22 +42,6 @@ public class Connection extends Thread {
 	
 	@Override
 	public void run() {
-//		try {
-//			while(true) {
-//				
-//			socket = new Socket(InetAddress.getLocalHost(), 11111);
-//			br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-//			pw = new PrintWriter(socket.getOutputStream(), true);
-//			break;
-//			}
-//			System.out.println("Connection established: " + socket.isConnected());
-//			while(true) {
-//					receivedData = br.readLine();
-//					System.out.println("Connection.receivedData: " + receivedData);
-//			}
-//		} catch (IOException e) {
-//			System.out.println("Server is no longer available");
-//		}
 		receiveData();
 	}
 	
@@ -82,6 +69,7 @@ public class Connection extends Thread {
 			
 			while(true) {
 				receivedData = br.readLine();
+				if(receivedData.equals("login successed")) login = true;
 				System.out.println("Connection.receivedData: " + receivedData);
 			}
 			
@@ -98,6 +86,10 @@ public class Connection extends Thread {
 		return receivedData;
 	}
 
+	public String getLoginData() {
+		return loginData;
+	}
+
 
 	public void setMsg(String msg) {
 		Connection.msg = msg;
@@ -111,6 +103,12 @@ public class Connection extends Thread {
 		return connected;
 	}
 
+	public void send(String msg) {
+		pw.println(msg);
+	}
 	
+	public static boolean isLogin() {
+		return login;
+	}
 	
 }

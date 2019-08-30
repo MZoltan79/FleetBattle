@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import communication.Connection;
+import data.PlayersData;
 import fleetbattle.model.AutoPlaceOpponent;
 import fleetbattle.model.AutoPlace;
 import fleetbattle.model.GameData;
@@ -19,6 +20,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
@@ -44,6 +46,7 @@ public class MainApp extends Application {
 	AutoPlace ap;				
 	GamePlay gp;
 	GameData gd;
+	PlayersData pd;
 	
 	Ship tempShip = null;
 	Ship carrier = new Ship("carrier");
@@ -59,7 +62,8 @@ public class MainApp extends Application {
 	Player player2;
 	Connection conn;
 	private boolean[][] table;
-	private boolean singlePlayer = true;;
+	private boolean singlePlayer = true;
+	public static boolean guestMode = false;
 	static int x = 0;
 	static int y = 0;
 	String shipName = "CARRIER";
@@ -92,6 +96,7 @@ public class MainApp extends Application {
 			ap = AutoPlace.getInstance();
 			ap.setupOfFields();
 			gd = GameData.getInstance();
+			pd = PlayersData.getInstance();
 			Scene scene = new Scene(rootLayout);
 			scene.getStylesheets().add(getClass().getResource("view/application.css").toExternalForm());
 			primaryStage.setScene(scene);
@@ -219,6 +224,7 @@ public class MainApp extends Application {
 	
 	public void showBattleLayout() {
 		try {
+			System.out.println(player1);
 			AnchorPane battleLayout;
 			AnchorPane rightPane;
 			FXMLLoader loader = new FXMLLoader();
@@ -374,5 +380,33 @@ public class MainApp extends Application {
 	public void setSinglePlayer(boolean singlePlayer) {
 		this.singlePlayer = singlePlayer;
 	}
+
+	public boolean isGuestMode() {
+		return guestMode;
+	}
+
+	public void setGuestMode() {
+		guestMode = !guestMode;
+	}
+
+	public Player getPlayer1() {
+		return player1;
+	}
+
+	public void setPlayer1(Player player1) {
+		this.player1 = player1;
+	}
+
+	public Player getPlayer2() {
+		return player2;
+	}
+
+	public void setPlayer2(Player player2) {
+		this.player2 = player2;
+	}
+	
+	
+	
+	
 
 }
