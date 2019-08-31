@@ -2,7 +2,6 @@ package fleetbattle.model;
 
 import java.util.ArrayList;
 import java.util.Random;
-
 import communication.Connection;
 import data.PlayersData;
 import fleetbattle.MainApp;
@@ -15,7 +14,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import server.Server;
 
 public class GamePlay extends BorderPane{
 	
@@ -27,33 +25,35 @@ public class GamePlay extends BorderPane{
 		}
 		return instance; 
 	}
+	
 	private MainApp mainApp;
 	private AutoPlaceOpponent ao;
-	GameData gd;
-	PlayersData pd;
-	
-	private Random rnd = new Random();
+	private GameData gd;
+	private PlayersData pd;
+	private Connection conn;
 	private BattleLayoutController controller;
 	private GameOverLayoutController goController;
-	Connection conn;
 	
+	private Canvas canvas;
+	private GraphicsContext gc;
+	private Random rnd = new Random();
+	private ArrayList<Ship> ownFleet;
+	private ArrayList<Ship> opponentsFleet;
 	private boolean[][] ownHits;
 	private boolean[][] opponentsHits;
 	private boolean turn;
 	private boolean ownTurnWasFirst;
 	private int a;
 	private int b;
+	
+	@SuppressWarnings("unused")
 	private int prevA;
+	@SuppressWarnings("unused")
 	private int prevB;
+	
 	private Integer x = 10000;
 	private Integer y = 10000;
 	private Integer turns;
-	private ArrayList<Ship> ownFleet;
-	private ArrayList<Ship> opponentsFleet;
-	private Canvas canvas;
-	private GraphicsContext gc;
-	
-	
 	
 	private GamePlay() {
 		this.setMinSize(398, 398);
@@ -69,7 +69,6 @@ public class GamePlay extends BorderPane{
 		mainApp = new MainApp();
 		gd = GameData.getInstance();
 		conn = Connection.getInstance();
-//		Connection.sendData = buildOwnData();
 		if(mainApp.isSinglePlayer()) {
 			ao = AutoPlaceOpponent.getInstance();
 			ao.setupOfFields();
@@ -83,22 +82,12 @@ public class GamePlay extends BorderPane{
 		gc = canvas.getGraphicsContext2D();
 		opponentsFleet = gd.getOpponentsFleet();
 		goController = new GameOverLayoutController();
-//		if(!mainApp.isSinglePlayer()) {
-//			conn.setDaemon(true);
-//			conn.start();
-//		}
-	}
-	
-
-	public boolean isOwnTurnWasFirst() {
-		return ownTurnWasFirst;
 	}
 
 
 	public void startSinglePlayer() {
 			controller.drawOwnCanvas();
 			drawOpponentsTable();
-			System.out.println();
 			if(!turn) {
 				opponentsTurn();
 			} 
@@ -108,36 +97,40 @@ public class GamePlay extends BorderPane{
 	public void startMultiPlayer() {
 		
 		initializeOpponentsDataMP();
-		if(pd.isBeginner()) {
-			turn = true;
-		} else {
-			turn = false;
-		}
-		System.out.println("turn:"+turn);
+//		System.out.println("turn:"+turn);
 		Platform.runLater(new Runnable() {
 			
 			@Override
 			public void run() {
-				System.out.println("from GamePlay: "+conn.getReceivedData());
 				controller.drawOwnCanvas();
 				drawOpponentsTable();
 				
 			}
 		});
-		System.out.println("ownFleetsize: " + countFleetSize(ownFleet));
-		System.out.println("opponentsFleetsize: " + countFleetSize(opponentsFleet));
+//		System.out.println("ownFleetsize: " + countFleetSize(ownFleet));
+//		System.out.println("opponentsFleetsize: " + countFleetSize(opponentsFleet));
 		opponentsHitMP();
 		ownTurn();
+//		System.out.println("opp fleet:");
+//		gd.getOpponentsFleet().forEach(e -> System.out.println(e));
+//		System.out.println("own fleet:");
+//		gd.getOwnFleet().forEach(e -> System.out.println(e));
 	}
+	
+	/*
+	 * 	initializeOpponentsDataMP() sets the opponent's data (fleet, map, etc...).
+	 * 	gets data from opponent's buildOwnData method.
+	 */
 	public void initializeOpponentsDataMP() {
-		System.out.println("initializoppData előtt a receiveData: " + conn.getReceivedData());
+		
+		gd.getOpponentsFleet().removeAll(gd.getOpponentsFleet());
 		String data = Connection.receivedData;
 		String[] tmp = data.split(";");
 		Ship carrier = new Ship("carrier");
-		Ship destroyer = new Ship("carrier");
-		Ship submarine = new Ship("carrier");
-		Ship cruiser = new Ship("carrier");
-		Ship patrolboat = new Ship("carrier");
+		Ship destroyer = new Ship("destroyer");
+		Ship submarine = new Ship("submarine");
+		Ship cruiser = new Ship("cruiser");
+		Ship patrolboat = new Ship("patrolboat");
 		Ship[] tempFleet = new Ship[5];
 		tempFleet[0] = carrier;
 		tempFleet[1] = destroyer;
@@ -145,11 +138,12 @@ public class GamePlay extends BorderPane{
 		tempFleet[3] = cruiser;
 		tempFleet[4] = patrolboat;
 		for(int i = 0; i < 5; i++) {
-			gd.opponentsFleet.add(tempFleet[i]);
-			gd.opponentsFleet.get(i).setVertical(Boolean.parseBoolean(tmp[0 + (i*3)]));									// ship isVertical()
-			gd.opponentsFleet.get(i).setStartpoint(Integer.parseInt(tmp[1+ (i*3)]), Integer.parseInt(tmp[2+ (i*3)]));			// ship getCoordinates() (index: 0 és 1)
-			gd.opponentsFleet.get(i).setCoordinates(Integer.parseInt(tmp[1+ (i*3)]), Integer.parseInt(tmp[2+ (i*3)]));
+			gd.getOpponentsFleet().add(tempFleet[i]);
+			gd.getOpponentsFleet().get(i).setVertical(Boolean.parseBoolean(tmp[0 + (i*3)]));
+			gd.getOpponentsFleet().get(i).setStartpoint(Integer.parseInt(tmp[1+ (i*3)]), Integer.parseInt(tmp[2+ (i*3)]));
+			gd.getOpponentsFleet().get(i).setCoordinates(Integer.parseInt(tmp[1+ (i*3)]), Integer.parseInt(tmp[2+ (i*3)]));
 		}
+		
 		int x = 0;
 		for(int i = 0; i < 10; i++) {
 			for(int j = 0; j < 10; j++) {
@@ -158,6 +152,10 @@ public class GamePlay extends BorderPane{
 			}
 		}
 	}
+	
+	/*
+	 * buildOwnData() builds a String, and sends it to the opponent.
+	 */
 	
 	public String buildOwnData() {
 		StringBuilder data = new StringBuilder();
@@ -174,12 +172,11 @@ public class GamePlay extends BorderPane{
 		return data.toString();
 	}
 	
-	
+
 	public void ownTurn() {
 			canvas.addEventFilter(MouseEvent.MOUSE_CLICKED, this::mouseMovedOwnHit);
 			
 	}
-	
 	
 	public void mouseMovedOwnHit(MouseEvent ev) {
 		x = (int)((ev.getX()-51)/30);
@@ -197,39 +194,9 @@ public class GamePlay extends BorderPane{
 	
 	}
 	
-	public void opponentsHitMP() {
-	
-		Thread th = new Thread(new Runnable() {
-		
-			@Override
-			public void run() {
-				System.out.println("opponentshitMP");
-				controller.checkOwnFleet();
-				String[] tmp = new String[2];
-				while(true) {
-					try {
-						Thread.sleep(200);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-					String data = conn.getReceivedData();
-					if(data.length() < 6) {
-						tmp = data.split(";");
-						a = Integer.parseInt(tmp[0]);
-						b = Integer.parseInt(tmp[1]);
-						if(a > -1 && b > -1) {
-						controller.checkOwnFleet();
-						controller.drawOpponentsHit();
-						controller.drawOwnSunkedShips();
-						}
-					}
-						
-				}
-			}
-		});
-		th.setDaemon(true);
-		th.start();
-	}
+	/*
+	 * drawOwnHit() draws own hits.
+	 */
 
 	public void drawOwnHit() {
 		Font font = new Font(30);
@@ -254,6 +221,7 @@ public class GamePlay extends BorderPane{
 			if(mainApp.isSinglePlayer()) {
 				opponentsTurn();
 			}
+			controller.showTurnStat();
 		} else if(ownHits[x][y] == false && gd.getOpponentsTable()[x][y] == true) {
 			ownHits[x][y] = true;
 			controller.setHitIndicator("Hit!");
@@ -270,6 +238,11 @@ public class GamePlay extends BorderPane{
 		}
 	}
 	
+	
+	/*
+	 *	checkOppFleet() checks if the opponents ships are sunked. 
+	 */
+	
 	public void checkOppFleet() {
 		for(Ship s: gd.getOpponentsFleet()) {
 			boolean sunk = true;
@@ -281,6 +254,10 @@ public class GamePlay extends BorderPane{
 			if(sunk) s.setSunk();
 		}
 	}
+	
+	/*
+	 * drawOwnSunkedShips() draws the sunked ships, after checking them with checkOppFleet() method.
+	 */
 	
 	public void drawOpponentsSunkedShips() {
 		gc.setFill(Color.DARKRED);
@@ -299,29 +276,9 @@ public class GamePlay extends BorderPane{
 		
 	}
 
-	
-	public void drawTable() {
-		Font font = new Font(30);
-		gc.setFont(font);
-		Character[] columns = {'A','B','C','D','E','F','G','H'};
-		gc.setFill(Color.CADETBLUE);
-		for(int i = 0; i < columns.length; i++) {
-			gc.fillText(columns[i].toString(), i*30 + 53, 39);
-		}
-		gc.fillText("I", 297, 39);
-		gc.fillText("J", 327, 39);
-		for(Integer i = 1; i < 10; i++) {
-			gc.fillText(i.toString(), 18, (i-1)*30 + 75);
-		}
-		
-		gc.fillText("10", 12, 345);
-		for(int i = 0; i < 10; i++) {
-			for(int j = 0; j < 10; j++) {
-				gc.setFill(Color.CADETBLUE);
-				gc.fillRect((i*30 + 49), (j*30 + 49), 28, 28);
-			}
-		}
-	}
+	/*
+	 * 	drawOpponentsTable() draws the current map of the enemy in every turn.
+	 */
 	
 	public void drawOpponentsTable() {
 		Font font = new Font(30);
@@ -351,6 +308,11 @@ public class GamePlay extends BorderPane{
 			}
 		}
 	}
+	
+	/*
+	 * opponentsHit() generates the coordinates of AI hits.
+	 * opponentsTurn draws the hits of AI.
+	 */
 
 	public void opponentsHit() {
 		if(mainApp.isSinglePlayer()) {
@@ -369,44 +331,104 @@ public class GamePlay extends BorderPane{
 			controller.updateMPGui();
 		}
 	}
-
+	
+//	public void drawOwnTable() {
+//		Font font = new Font(30);
+//		gc.setFont(font);
+//		Character[] columns = {'A','B','C','D','E','F','G','H'};
+//		gc.setFill(Color.CADETBLUE);
+//		for(int i = 0; i < columns.length; i++) {
+//			gc.fillText(columns[i].toString(), i*15 + 20, 19);
+//		}
+//		gc.fillText("I", 150, 19);
+//		gc.fillText("J", 170, 19);
+//		for(Integer i = 1; i < 10; i++) {
+//			gc.fillText(i.toString(), 18, (i-1)*30 + 75);
+//		}
+//		gc.fillText("10", 6, 175);
+//		for(int i = 0; i < 10; i++) {
+//			for(int j = 0; j < 10; j++) {
+//				gc.setFill(Color.CADETBLUE);
+//				gc.fillRect((i*15 + 25), (j*15 + 25), 14, 14);
+//				if(opponentsHits[i][j] == true && gd.getOwnTable()[i][j] == false) {
+//					gc.setFill(Color.DARKRED);
+//					gc.fillText("X", (i*15)+26, (j*15)+38);
+//				} else if(opponentsHits[i][j] == true && gd.getOwnTable()[i][j] == true) {
+//					gc.setFill(Color.DARKRED);
+//					gc.fillOval((a*15)+25, (b*15)+25,14,14);
+//				}
+//			}
+//		}
+//	}
+	
+/*
+ * 	Draws the hits of multiplayer opponent.
+ */
 	
 	
-	public void drawOwnTable() {
+	/*
+	 * opponentsHitMP() checks the two int 'a' & 'b' if they changed, and draws multiplayer opponent's hits.
+	 */
+	
+	public void opponentsHitMP() {
+		
+		Thread th = new Thread(new Runnable() {
+		
+			@Override
+			public void run() {
+				controller.checkOwnFleet();
+				String[] tmp = new String[2];
+				while(true) {
+					try {
+						Thread.sleep(200);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					String data = conn.getReceivedData();
+					if(data.length() < 6) {
+						tmp = data.split(";");
+						a = Integer.parseInt(tmp[0]);
+						b = Integer.parseInt(tmp[1]);
+						if(a > -1 && b > -1) {
+						controller.checkOwnFleet();
+						controller.drawOpponentsHit();
+						controller.drawOwnSunkedShips();
+						}
+					}
+						
+				}
+			}
+		});
+		th.setDaemon(true);
+		th.start();
+	}
+/*
+ * 	drawTable() draws the own map for the first time.
+ */
+	
+	public void drawTable() {
 		Font font = new Font(30);
 		gc.setFont(font);
 		Character[] columns = {'A','B','C','D','E','F','G','H'};
 		gc.setFill(Color.CADETBLUE);
 		for(int i = 0; i < columns.length; i++) {
-			gc.fillText(columns[i].toString(), i*15 + 20, 19);
+			gc.fillText(columns[i].toString(), i*30 + 53, 39);
 		}
-		gc.fillText("I", 150, 19);
-		gc.fillText("J", 170, 19);
+		gc.fillText("I", 297, 39);
+		gc.fillText("J", 327, 39);
 		for(Integer i = 1; i < 10; i++) {
 			gc.fillText(i.toString(), 18, (i-1)*30 + 75);
 		}
-		gc.fillText("10", 6, 175);
+		
+		gc.fillText("10", 12, 345);
 		for(int i = 0; i < 10; i++) {
 			for(int j = 0; j < 10; j++) {
 				gc.setFill(Color.CADETBLUE);
-				gc.fillRect((i*15 + 25), (j*15 + 25), 14, 14);
-				if(opponentsHits[i][j] == true && gd.getOwnTable()[i][j] == false) {
-					gc.setFill(Color.DARKRED);
-					gc.fillText("X", (i*15)+26, (j*15)+38);
-				} else if(opponentsHits[i][j] == true && gd.getOwnTable()[i][j] == true) {
-					gc.setFill(Color.DARKRED);
-					gc.fillOval((a*15)+25, (b*15)+25,14,14);
-				}
+				gc.fillRect((i*30 + 49), (j*30 + 49), 28, 28);
 			}
 		}
 	}
-	
-	
-	public void setMainApp(MainApp mainApp) {
-		this.mainApp = mainApp;
-	}
-	
-	
+
 	
 	public Integer countFleetSize(ArrayList<Ship> list) {
 		Integer result = 5;
@@ -418,6 +440,14 @@ public class GamePlay extends BorderPane{
 		return result;
 	}
 
+	public boolean isOwnTurnWasFirst() {
+		return ownTurnWasFirst;
+	}
+	
+	public void setMainApp(MainApp mainApp) {
+		this.mainApp = mainApp;
+	}
+	
 	public void increaseTurns() {
 		turns++;
 	}
@@ -450,11 +480,9 @@ public class GamePlay extends BorderPane{
 		return a;
 	}
 
-
 	public int getB() {
 		return b;
 	}
-
 
 	public boolean[][] getOpponentsHits() {
 		return opponentsHits;
@@ -464,11 +492,4 @@ public class GamePlay extends BorderPane{
 		return ownFleet;
 	}
 	
-
-
-	
-	
-	
-	
-
 }

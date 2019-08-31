@@ -56,12 +56,18 @@ public class BattleLayoutController {
 	}
 	
 	public void showTurnStat() {
-		turnIndicator.setText(gp.isTurn()? "Your turn":"Enemy's turn");
-		turnCounter.setText(gp.getTurns().toString());
 		oppFleetSize = gp.countFleetSize(gd.getOpponentsFleet());
 		ownFleetSize = gp.countFleetSize(gd.getOwnFleet());
-		oppFleet.setText(oppFleetSize.toString());
-		yourFleet.setText(ownFleetSize.toString());
+		final KeyFrame kf1 = new KeyFrame(Duration.seconds(0.1), e -> turnIndicator.setText(gp.isTurn()? "Your turn":"Enemy's turn"));
+		final KeyFrame kf2 = new KeyFrame(Duration.seconds(0.1), e -> turnCounter.setText(gp.getTurns().toString()));
+		final KeyFrame kf3 = new KeyFrame(Duration.seconds(0.1), e -> oppFleet.setText(oppFleetSize.toString()));
+		final KeyFrame kf4 = new KeyFrame(Duration.seconds(0.1), e -> yourFleet.setText(ownFleetSize.toString()));
+		final Timeline tl = new Timeline(kf1, kf2, kf3, kf4);
+		Platform.runLater(tl::play);
+//		turnIndicator.setText(gp.isTurn()? "Your turn":"Enemy's turn");
+//		turnCounter.setText(gp.getTurns().toString());
+//		oppFleet.setText(oppFleetSize.toString());
+//		yourFleet.setText(ownFleetSize.toString());
 		
 	}
 	
@@ -105,13 +111,13 @@ public class BattleLayoutController {
 			 gc.setFill(Color.DARKRED);
 			 gc.fillText("X", (gp.getA()*15)+26, (gp.getB()*15)+38);
 			 gp.changeTurn();
+			 showTurnStat();
 			 if(gp.isOwnTurnWasFirst()) gp.increaseTurns();
-//				showTurnStat();
 		 	} else if(gp.getOpponentsHits()[gp.getA()][gp.getB()] == false && gd.getOwnTable()[gp.getA()][gp.getB()] == true) {
 		 		gp.getOpponentsHits()[gp.getA()][gp.getB()] = true;
 		 		gc.setFill(Color.DARKRED);
 		 		gc.fillOval((gp.getA()*15)+25, (gp.getB()*15)+25,14,14);
-//		 		showTurnStat();
+		 		showTurnStat();
 //		 		gp.opponentsTurn();
 		 	}
 		}

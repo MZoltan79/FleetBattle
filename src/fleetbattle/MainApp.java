@@ -5,7 +5,6 @@ import java.util.ArrayList;
 
 import communication.Connection;
 import data.PlayersData;
-import fleetbattle.model.AutoPlaceOpponent;
 import fleetbattle.model.AutoPlace;
 import fleetbattle.model.GameData;
 import fleetbattle.model.GamePlay;
@@ -20,7 +19,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
@@ -58,8 +56,8 @@ public class MainApp extends Application {
 	ArrayList<Ship> ownFleet = new ArrayList<>();
 	
 
-	Player player1;
-	Player player2;
+	public static Player player1;
+	public static Player player2;
 	Connection conn;
 	private boolean[][] table;
 	private boolean singlePlayer = true;
@@ -224,7 +222,7 @@ public class MainApp extends Application {
 	
 	public void showBattleLayout() {
 		try {
-			System.out.println(player1);
+//			System.out.println(player1);
 			AnchorPane battleLayout;
 			AnchorPane rightPane;
 			FXMLLoader loader = new FXMLLoader();
@@ -316,7 +314,7 @@ public class MainApp extends Application {
 	public void mousePressed(MouseEvent ev) {
 		if(x >= 0 && y >= 0) {
 			drawTable();
-			System.out.println(x + " " + y);
+//			System.out.println(x + " " + y);
 		}
 	}
 	

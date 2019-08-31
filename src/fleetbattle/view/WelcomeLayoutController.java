@@ -97,7 +97,6 @@ public class WelcomeLayoutController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println(conn.getReceivedData());
 		if(Connection.isLogin()) {
 			System.out.println("logged in...");
 			String[] tmp = conn.getReceivedData().split(";");
@@ -111,7 +110,6 @@ public class WelcomeLayoutController {
 		conn.send("newplayer");
 		conn.send(nick.getText());
 		conn.send(password.getText());
-		System.out.println(conn.getReceivedData());
 	}
 
 }

@@ -63,6 +63,9 @@ public class GameOverLayoutController {
 			display.setText("VICTORY");
 			resultPicture.setImage(victory);
 		}
+		player1Small.setText(MainApp.player1.getNickName());
+		player1GamesPlayed.setText(MainApp.player1.getGamesPlayed().toString());
+		player1GamesWon.setText(MainApp.player1.getGamesWon().toString());
 		
 	}
 	

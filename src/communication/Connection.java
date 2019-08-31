@@ -8,8 +8,6 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import fleetbattle.model.GamePlay;
-import javafx.application.Platform;
 
 public class Connection extends Thread {
 	
@@ -70,7 +68,6 @@ public class Connection extends Thread {
 			while(true) {
 				receivedData = br.readLine();
 				if(receivedData.equals("login successed")) login = true;
-				System.out.println("Connection.receivedData: " + receivedData);
 			}
 			
 		} catch (UnknownHostException e) {

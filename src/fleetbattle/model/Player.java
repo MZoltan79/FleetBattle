@@ -42,7 +42,7 @@ public class Player {
 		this.nickName = nickName;
 	}
 
-	public int getGamesPlayed() {
+	public Integer getGamesPlayed() {
 		return gamesPlayed;
 	}
 
@@ -50,7 +50,7 @@ public class Player {
 		this.gamesPlayed = gamesPlayed;
 	}
 
-	public int getGamesWon() {
+	public Integer getGamesWon() {
 		return gamesWon;
 	}
 

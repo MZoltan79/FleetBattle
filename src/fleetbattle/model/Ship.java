@@ -103,10 +103,7 @@ public class Ship {
 
 
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		
-		
-		return null;
+		return name + ", verical: " + vertical + ", sunk: " + sunk + ", coordinates: " + coordinates[0] + ":" + coordinates[1]; 
 		
 	}
 
