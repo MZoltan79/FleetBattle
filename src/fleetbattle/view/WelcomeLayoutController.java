@@ -1,6 +1,5 @@
 package fleetbattle.view;
 
-import java.util.Map;
 
 import communication.Connection;
 import data.PlayersData;
@@ -25,14 +24,18 @@ public class WelcomeLayoutController {
 		conn = Connection.getInstance();
 		gd = GameData.getInstance();
 		pd = PlayersData.getInstance();
-		initGuestNoteLabel();
+		loggedInLabel.setText(pd.getPlayer1().getNickName().equals("Guest player")? 
+				"Playing as guest":"Playing as " + pd.getPlayer1().getNickName());
 	}
 	
 	@FXML
 	CheckBox guestCheckBox;
 	
 	@FXML
-	Label guestNoteLabel;
+	Label opponentReady;
+	
+	@FXML
+	Label loggedInLabel;
 	
 	@FXML
 	Button startButton;
@@ -61,12 +64,12 @@ public class WelcomeLayoutController {
 	
 	private MainApp mainApp;
 	
-	public void setMainApp(MainApp mainApp) {
-		this.mainApp = mainApp;
+	public void initOpponentReadyLabel(String msg) {
+		opponentReady.setText(msg);
 	}
 	
-	public void initGuestNoteLabel() {
-		guestNoteLabel.setText(MainApp.guestMode? "Note: your data won't be stored as guest!":"");
+	public void setMainApp(MainApp mainApp) {
+		this.mainApp = mainApp;
 	}
 	
 	public void handlePlaceShipsButton() {
@@ -98,11 +101,14 @@ public class WelcomeLayoutController {
 			e.printStackTrace();
 		}
 		if(Connection.isLogin()) {
-			System.out.println("logged in...");
+			loggedInLabel.setText("logged in...");
 			String[] tmp = conn.getReceivedData().split(";");
-			mainApp.setPlayer1(new Player(tmp[0], Integer.parseInt(tmp[1]), Integer.parseInt(tmp[2])));
+			Player player = new Player(tmp[0], Integer.parseInt(tmp[1]), Integer.parseInt(tmp[2]));
+			pd.setPlayer1(player);
+			
+			
 		} else {
-			System.out.println("Wrong nick name or password! Try again");
+			loggedInLabel.setText("Wrong nick name or password! Try again");
 		}
 	}
 	

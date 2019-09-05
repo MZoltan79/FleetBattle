@@ -1,5 +1,6 @@
 package fleetbattle.view;
 
+import data.PlayersData;
 import fleetbattle.MainApp;
 import fleetbattle.model.GameData;
 import fleetbattle.model.GamePlay;
@@ -18,6 +19,7 @@ import javafx.util.Duration;
 public class BattleLayoutController {
 	
 	MainApp mainApp;
+	PlayersData pd;
 	GamePlay gp; 
 	Integer oppFleetSize;
 	Integer ownFleetSize;
@@ -25,12 +27,14 @@ public class BattleLayoutController {
 	GameData gd;
 	
 	public void initialize() {
+		pd = PlayersData.getInstance();
 		gd = GameData.getInstance();
 		gp = GamePlay.getInstance();
 		gp.setController(this);
 		gc = ownCanvas.getGraphicsContext2D();
 		oppFleetSize = gd.getOpponentsFleet().size();
 		ownFleetSize = gd.getOwnFleet().size();
+		
 	}
 	
 	@FXML
@@ -58,16 +62,15 @@ public class BattleLayoutController {
 	public void showTurnStat() {
 		oppFleetSize = gp.countFleetSize(gd.getOpponentsFleet());
 		ownFleetSize = gp.countFleetSize(gd.getOwnFleet());
+//		System.out.println("oppfleet: "+oppFleetSize);
+//		System.out.println("ownFleet: "+ownFleetSize);
 		final KeyFrame kf1 = new KeyFrame(Duration.seconds(0.1), e -> turnIndicator.setText(gp.isTurn()? "Your turn":"Enemy's turn"));
 		final KeyFrame kf2 = new KeyFrame(Duration.seconds(0.1), e -> turnCounter.setText(gp.getTurns().toString()));
 		final KeyFrame kf3 = new KeyFrame(Duration.seconds(0.1), e -> oppFleet.setText(oppFleetSize.toString()));
 		final KeyFrame kf4 = new KeyFrame(Duration.seconds(0.1), e -> yourFleet.setText(ownFleetSize.toString()));
+		
 		final Timeline tl = new Timeline(kf1, kf2, kf3, kf4);
 		Platform.runLater(tl::play);
-//		turnIndicator.setText(gp.isTurn()? "Your turn":"Enemy's turn");
-//		turnCounter.setText(gp.getTurns().toString());
-//		oppFleet.setText(oppFleetSize.toString());
-//		yourFleet.setText(ownFleetSize.toString());
 		
 	}
 	
@@ -111,24 +114,32 @@ public class BattleLayoutController {
 			 gc.setFill(Color.DARKRED);
 			 gc.fillText("X", (gp.getA()*15)+26, (gp.getB()*15)+38);
 			 gp.changeTurn();
-			 showTurnStat();
 			 if(gp.isOwnTurnWasFirst()) gp.increaseTurns();
 		 	} else if(gp.getOpponentsHits()[gp.getA()][gp.getB()] == false && gd.getOwnTable()[gp.getA()][gp.getB()] == true) {
 		 		gp.getOpponentsHits()[gp.getA()][gp.getB()] = true;
 		 		gc.setFill(Color.DARKRED);
 		 		gc.fillOval((gp.getA()*15)+25, (gp.getB()*15)+25,14,14);
-		 		showTurnStat();
-//		 		gp.opponentsTurn();
+		 		gp.opponentsTurn();
 		 	}
 		}
+		oppFleetSize = gp.countFleetSize(gd.getOpponentsFleet());
+		ownFleetSize = gp.countFleetSize(gd.getOwnFleet());
+		showTurnStat();
 		
 	}
 	
 	public void updateMPGui() {
 		final KeyFrame kf1 = new KeyFrame(Duration.seconds(Math.random()), e -> drawOpponentsHit());
 		final KeyFrame kf2 = new KeyFrame(Duration.seconds(1.1), e -> drawOwnSunkedShips());
-		final Timeline tl = new Timeline(kf1, kf2);
+		final KeyFrame kf3 = new KeyFrame(Duration.seconds(1.1), e -> {
+			if(ownFleetSize == 0) {
+				mainApp.showGameOverLayout();
+			}
+		});
+		final Timeline tl = new Timeline(kf1, kf2, kf3);
+//		final Timeline tl = new Timeline(kf1, kf2);
 		Platform.runLater(tl::play);
+		
 	}
 	
 	public void drawOwnSunkedShips() {
@@ -145,9 +156,6 @@ public class BattleLayoutController {
 			}
 			
 		}
-//		if(gp.countFleetSize(gd.getOpponentsFleet()) < 1 || gp.countFleetSize(gd.getOwnFleet()) < 1) {
-//			mainApp.showGameOverLayout();
-//			}
 	}
 	
 	public void checkOwnFleet() {
@@ -171,6 +179,14 @@ public class BattleLayoutController {
 				
 			}
 		}
+	}
+
+	public Integer getOppFleetSize() {
+		return oppFleetSize;
+	}
+
+	public Integer getOwnFleetSize() {
+		return ownFleetSize;
 	}
 
 }

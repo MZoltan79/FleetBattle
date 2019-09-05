@@ -56,20 +56,10 @@ public class GameData {
 
 	public void setOppFleet(ArrayList<Ship> list) {
 		this.opponentsFleet = list;
-//		oppFleet.removeAll(oppFleet);
-//		oppFleet.addAll(list);
-//		for(Ship s: oppFleet) {
-//			System.out.println(s.name() + " koordináták: " + s.getCoordinates()[0] + "," +s.getCoordinates()[1]);
-//		}
 	}
 	
 	public void setOwnFleet(ArrayList<Ship> list) {
 		this.ownFleet = list;
-//		ownFleet.removeAll(ownFleet);
-//		ownFleet.addAll(list);
-//		for(Ship s: ownFleet) {
-//			System.out.println(s.name() + " koordináták: " + s.getCoordinates()[0] + "," +s.getCoordinates()[1]);
-//		}
 		
 	}
 	

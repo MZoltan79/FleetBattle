@@ -6,16 +6,19 @@ import communication.Connection;
 import fleetbattle.MainApp;
 import fleetbattle.model.GameData;
 import fleetbattle.model.GamePlay;
-import fleetbattle.model.Ship;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 
 public class PlaceShipsLayoutController {
+	
+	public static boolean ready = false;
+	
 	GamePlay gp;
 	GameData gd;
 	Connection conn;
+	private MainApp mainApp;
 	
 	public PlaceShipsLayoutController() {
 		
@@ -57,7 +60,6 @@ public class PlaceShipsLayoutController {
 	Button clearButton;
 	
 	
-	private MainApp mainApp;
 	
 	public Canvas getPlacingCanvas() {
 		return placingCanvas;
@@ -75,6 +77,7 @@ public class PlaceShipsLayoutController {
 				Connection.sendData = gp.buildOwnData();
 				conn.sendData();
 			}
+			ready = true;
 			mainApp.showWelcomeLayout();
 		}
 		

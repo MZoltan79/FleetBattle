@@ -33,6 +33,7 @@ public class GamePlay extends BorderPane{
 	private Connection conn;
 	private BattleLayoutController controller;
 	private GameOverLayoutController goController;
+	private boolean firstLaunch;
 	
 	private Canvas canvas;
 	private GraphicsContext gc;
@@ -56,6 +57,7 @@ public class GamePlay extends BorderPane{
 	private Integer turns;
 	
 	private GamePlay() {
+		firstLaunch = true;
 		this.setMinSize(398, 398);
 		this.setPrefSize(USE_COMPUTED_SIZE, USE_COMPUTED_SIZE);
 		pd = PlayersData.getInstance();
@@ -86,6 +88,8 @@ public class GamePlay extends BorderPane{
 
 
 	public void startSinglePlayer() {
+			pd.setPlayer1(new Player("you",0,0));
+			pd.setPlayer2(new Player("AI opponent",0,0));
 			controller.drawOwnCanvas();
 			drawOpponentsTable();
 			if(!turn) {
@@ -95,26 +99,21 @@ public class GamePlay extends BorderPane{
 	}
 	
 	public void startMultiPlayer() {
+//		System.out.println(pd.getPlayer1().getNickName());
+//		System.out.println(pd.getPlayer2().getNickName());
 		
-		initializeOpponentsDataMP();
-//		System.out.println("turn:"+turn);
 		Platform.runLater(new Runnable() {
 			
 			@Override
 			public void run() {
+				initializeOpponentsDataMP();
 				controller.drawOwnCanvas();
 				drawOpponentsTable();
+				opponentsHitMP();
+				ownTurn();
 				
 			}
 		});
-//		System.out.println("ownFleetsize: " + countFleetSize(ownFleet));
-//		System.out.println("opponentsFleetsize: " + countFleetSize(opponentsFleet));
-		opponentsHitMP();
-		ownTurn();
-//		System.out.println("opp fleet:");
-//		gd.getOpponentsFleet().forEach(e -> System.out.println(e));
-//		System.out.println("own fleet:");
-//		gd.getOwnFleet().forEach(e -> System.out.println(e));
 	}
 	
 	/*
@@ -126,6 +125,16 @@ public class GamePlay extends BorderPane{
 		gd.getOpponentsFleet().removeAll(gd.getOpponentsFleet());
 		String data = Connection.receivedData;
 		String[] tmp = data.split(";");
+		if(tmp[0].equals("true") && turn == true) {
+			turn = false;
+			ownTurnWasFirst = false;
+		} else if(tmp[0].equals("false") && turn == false) {
+			turn = true;
+			ownTurnWasFirst = true;
+		}
+		controller.showTurnStat();
+		Player temp = new Player(tmp[1],Integer.parseInt(tmp[2]), Integer.parseInt(tmp[3]));
+		pd.setPlayer2(temp);
 		Ship carrier = new Ship("carrier");
 		Ship destroyer = new Ship("destroyer");
 		Ship submarine = new Ship("submarine");
@@ -139,15 +148,15 @@ public class GamePlay extends BorderPane{
 		tempFleet[4] = patrolboat;
 		for(int i = 0; i < 5; i++) {
 			gd.getOpponentsFleet().add(tempFleet[i]);
-			gd.getOpponentsFleet().get(i).setVertical(Boolean.parseBoolean(tmp[0 + (i*3)]));
-			gd.getOpponentsFleet().get(i).setStartpoint(Integer.parseInt(tmp[1+ (i*3)]), Integer.parseInt(tmp[2+ (i*3)]));
-			gd.getOpponentsFleet().get(i).setCoordinates(Integer.parseInt(tmp[1+ (i*3)]), Integer.parseInt(tmp[2+ (i*3)]));
+			gd.getOpponentsFleet().get(i).setVertical(Boolean.parseBoolean(tmp[4 + (i*3)]));
+			gd.getOpponentsFleet().get(i).setStartpoint(Integer.parseInt(tmp[5+ (i*3)]), Integer.parseInt(tmp[6+ (i*3)]));
+			gd.getOpponentsFleet().get(i).setCoordinates(Integer.parseInt(tmp[5+ (i*3)]), Integer.parseInt(tmp[6+ (i*3)]));
 		}
 		
 		int x = 0;
 		for(int i = 0; i < 10; i++) {
 			for(int j = 0; j < 10; j++) {
-				gd.opponentsTable[i][j] = Boolean.parseBoolean(tmp[15+x]);
+				gd.opponentsTable[i][j] = Boolean.parseBoolean(tmp[19+x]);
 				x++;
 			}
 		}
@@ -159,6 +168,7 @@ public class GamePlay extends BorderPane{
 	
 	public String buildOwnData() {
 		StringBuilder data = new StringBuilder();
+		data.append(turn + ";" + pd.getPlayer1().toString() + ";");
 		for(int i = 0; i < 5; i++) {
 			data.append(gd.getOwnFleet().get(i).isVertical() + ";" + gd.getOwnFleet().get(i).getCoordinates()[0] + 
 					";" + gd.getOwnFleet().get(i).getCoordinates()[1] + ";");
@@ -174,23 +184,25 @@ public class GamePlay extends BorderPane{
 	
 
 	public void ownTurn() {
+		if(firstLaunch) {
 			canvas.addEventFilter(MouseEvent.MOUSE_CLICKED, this::mouseMovedOwnHit);
 			
+		}
 	}
 	
 	public void mouseMovedOwnHit(MouseEvent ev) {
 		x = (int)((ev.getX()-51)/30);
 		y = (int)(ev.getY()-51)/30;
-		
+		System.out.println(x + ":" +y);
 		
 		drawOwnHit();
 		checkOppFleet();
 		drawOpponentsSunkedShips();
 		controller.setOppFleetIndicator(countFleetSize(gd.getOpponentsFleet()).toString());
 		controller.setOwnFleetIndicator(countFleetSize(gd.getOwnFleet()).toString());
-		if((countFleetSize(gd.opponentsFleet) == 0) || (countFleetSize(gd.getOwnFleet()) == 0)) {
-			mainApp.showGameOverLayout();
-		}
+//		if((countFleetSize(gd.opponentsFleet) == 0) || (countFleetSize(gd.getOwnFleet()) == 0)) {
+//			mainApp.showGameOverLayout();
+//		}
 	
 	}
 	
@@ -211,7 +223,7 @@ public class GamePlay extends BorderPane{
 			changeTurn();
 			if(!ownTurnWasFirst && mainApp.isSinglePlayer()) {
 				turns++;
-			} else {
+			} else if(!ownTurnWasFirst && !mainApp.isSinglePlayer()) {
 				turns++;
 			}
 			controller.showTurnStat();
@@ -221,20 +233,15 @@ public class GamePlay extends BorderPane{
 			if(mainApp.isSinglePlayer()) {
 				opponentsTurn();
 			}
-			controller.showTurnStat();
 		} else if(ownHits[x][y] == false && gd.getOpponentsTable()[x][y] == true) {
 			ownHits[x][y] = true;
 			controller.setHitIndicator("Hit!");
 			gc.setFill(Color.DARKRED);
 			gc.fillOval((x*30)+49, (y*30)+49,28,28);
 			ownHits[x][y] = true;
-			controller.showTurnStat();
 			if(!mainApp.isSinglePlayer()) {
 				conn.send(x + ";" + y);
 			}
-//			if(countFleetSize(gd.getOwnFleet()) < 1 || countFleetSize(gd.getOpponentsFleet()) < 1) {
-//				mainApp.showGameOverLayout();
-//			}
 		}
 	}
 	
@@ -272,6 +279,23 @@ public class GamePlay extends BorderPane{
 				}
 			}
 			
+		}
+		if(countFleetSize(gd.getOpponentsFleet()) == 0) {
+			if(countFleetSize(gd.getOwnFleet()) == 0) {
+				pd.getPlayer2().increaseGamesWon();
+				pd.getPlayer1().increaseGamesPlayed();
+			}
+			if(countFleetSize(gd.getOpponentsFleet()) == 0) {
+				pd.getPlayer1().increaseGamesWon();
+				pd.getPlayer2().increaseGamesPlayed();
+			}
+			mainApp.showGameOverLayout();
+			firstLaunch = false;
+			resetHits();
+			if(!mainApp.isSinglePlayer()) {
+				conn.send("gameover");
+				conn.send(pd.getPlayer1() + ";" + pd.getPlayer2());
+			}
 		}
 		
 	}
@@ -329,6 +353,11 @@ public class GamePlay extends BorderPane{
 			opponentsHit();
 			controller.checkOwnFleet();
 			controller.updateMPGui();
+//			if(countFleetSize(gd.getOwnFleet()) == 0 || countFleetSize(gd.getOpponentsFleet()) == 0) {
+//				mainApp.showGameOverLayout();
+//				resetHits();
+//			}
+			
 		}
 	}
 	
@@ -373,7 +402,6 @@ public class GamePlay extends BorderPane{
 	public void opponentsHitMP() {
 		
 		Thread th = new Thread(new Runnable() {
-		
 			@Override
 			public void run() {
 				controller.checkOwnFleet();
@@ -393,9 +421,30 @@ public class GamePlay extends BorderPane{
 						controller.checkOwnFleet();
 						controller.drawOpponentsHit();
 						controller.drawOwnSunkedShips();
+						if(countFleetSize(gd.getOwnFleet()) == 0) {
+							Platform.runLater(new Runnable() {
+								
+								@Override
+								public void run() {
+									if(countFleetSize(gd.getOwnFleet()) == 0) {
+										pd.getPlayer2().increaseGamesWon();
+										pd.getPlayer1().increaseGamesPlayed();
+									}
+									if(countFleetSize(gd.getOpponentsFleet()) == 0) {
+										pd.getPlayer1().increaseGamesWon();
+										pd.getPlayer2().increaseGamesPlayed();
+									}
+									mainApp.showGameOverLayout();
+									resetHits();
+									// TODO Auto-generated method stub
+									
+								}
+							});
+							break;
+						}
+						
 						}
 					}
-						
 				}
 			}
 		});
@@ -492,4 +541,14 @@ public class GamePlay extends BorderPane{
 		return ownFleet;
 	}
 	
+	public void resetHits() {
+		turns = 1;
+		turn = rnd.nextBoolean();
+		for(int i = 0; i < 10; i++) {
+			for(int j = 0; j < 10; j++) {
+				opponentsHits[i][j] = false;
+				ownHits[i][j] = false;
+			}
+		}
+	}
 }

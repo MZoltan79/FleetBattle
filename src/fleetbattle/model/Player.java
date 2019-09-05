@@ -66,6 +66,13 @@ public class Player {
 		this.hits = hits;
 	}
 	
+	public void increaseGamesPlayed() {
+		gamesPlayed++;	
+	}
 	
+	public void increaseGamesWon() {
+		gamesPlayed++;
+		gamesWon++;
+	}
 
 }

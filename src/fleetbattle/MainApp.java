@@ -15,10 +15,12 @@ import fleetbattle.view.GameOverLayoutController;
 import fleetbattle.view.PlaceShipsLayoutController;
 import fleetbattle.view.WelcomeLayoutController;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
@@ -61,7 +63,7 @@ public class MainApp extends Application {
 	Connection conn;
 	private boolean[][] table;
 	private boolean singlePlayer = true;
-	public static boolean guestMode = false;
+	private boolean firstLaunchOfWelcomeLayout;
 	static int x = 0;
 	static int y = 0;
 	String shipName = "CARRIER";
@@ -73,7 +75,7 @@ public class MainApp extends Application {
 		this.primaryStage = primaryStage;
 		this.primaryStage.setResizable(false);
 		this.primaryStage.setTitle("Fleet Battle");
-		this.primaryStage.getIcons().add(new Image("file:/home/moricz/workspaces/own-workspace/FleetBattle/src/fleetbattle/view/Battleship-icon3.png"));
+		this.primaryStage.getIcons().add(new Image("file:src/fleetbattle/view/Battleship-icon3.png"));
 		initRootLayout();
 		showWelcomeLayout();
 	}
@@ -91,17 +93,26 @@ public class MainApp extends Application {
 			FXMLLoader loader = new FXMLLoader();
 			loader.setLocation(MainApp.class.getResource("view/RootLayout.fxml"));
 			rootLayout = loader.load();
+			pd = PlayersData.getInstance();
+			if(pd.getPlayer1() == null) {
+				pd.setPlayer1(new Player());
+			}
+			if(pd.getPlayer2() == null) {
+				pd.setPlayer2(new Player());
+			}
+			firstLaunchOfWelcomeLayout = true;
+			if(firstLaunchOfWelcomeLayout) {
+				conn = Connection.getInstance();
+				conn.setDaemon(true);
+				conn.start();
+			}
 			ap = AutoPlace.getInstance();
 			ap.setupOfFields();
 			gd = GameData.getInstance();
-			pd = PlayersData.getInstance();
 			Scene scene = new Scene(rootLayout);
 			scene.getStylesheets().add(getClass().getResource("view/application.css").toExternalForm());
 			primaryStage.setScene(scene);
 			primaryStage.show();
-			conn = Connection.getInstance();
-			conn.setDaemon(true);
-			conn.start();
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -110,15 +121,18 @@ public class MainApp extends Application {
 	// Ez a kezdőképernyö
 	
 	public void showWelcomeLayout() {
+		
 		try {
 			FXMLLoader loader = new FXMLLoader();
 			loader.setLocation(MainApp.class.getResource("view/WelcomeLayout.fxml"));
 			AnchorPane welcomeLayout = loader.load();
 			rootLayout.setCenter(welcomeLayout);
 			WelcomeLayoutController controller = loader.getController();
+			controller.setMainApp(this);
 			RadioButton singleplayer = (RadioButton) loader.getNamespace().get("singleplayer");
 			RadioButton multiplayer = (RadioButton) loader.getNamespace().get("multiplayer");
 			ToggleGroup modeGroup = new ToggleGroup();
+			Label opponentReady = (Label) loader.getNamespace().get("opponentReady");
 			singleplayer.setToggleGroup(modeGroup);
 			multiplayer.setToggleGroup(modeGroup);
 			if(singlePlayer) {
@@ -126,10 +140,42 @@ public class MainApp extends Application {
 			} else {
 				multiplayer.setSelected(true);
 			}
+			if(!singlePlayer && PlaceShipsLayoutController.ready ) {
+				opponentReady.setText("Waiting for opponent...");
+				Thread th = new Thread(new Runnable() {
+				String data = "proba";
+					
+				@Override
+				public void run() {
+					while(true) {
+						data = Connection.receivedData;
+						try {
+							Thread.sleep(300);
+						} catch (InterruptedException e) {
+						e.printStackTrace();
+						}
+						if(data.length() > 100) {
+							Platform.runLater(new Runnable() {
+								
+								@Override
+								public void run() {
+									opponentReady.setText("Opponent is ready to fight!");
+								}
+							});
+							break;
+							}
+						}
+					}
+				});
+				th.setDaemon(true);
+				th.start();
+			}
+			
 			controller.setMainApp(this);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		firstLaunchOfWelcomeLayout = false;
 	}
 	
 	
@@ -222,7 +268,6 @@ public class MainApp extends Application {
 	
 	public void showBattleLayout() {
 		try {
-//			System.out.println(player1);
 			AnchorPane battleLayout;
 			AnchorPane rightPane;
 			FXMLLoader loader = new FXMLLoader();
@@ -380,11 +425,11 @@ public class MainApp extends Application {
 	}
 
 	public boolean isGuestMode() {
-		return guestMode;
+		return firstLaunchOfWelcomeLayout;
 	}
 
 	public void setGuestMode() {
-		guestMode = !guestMode;
+		firstLaunchOfWelcomeLayout = !firstLaunchOfWelcomeLayout;
 	}
 
 	public Player getPlayer1() {

@@ -18,6 +18,7 @@ public class Connection extends Thread {
 	public static String sendData = null;
 	public static String receivedData = null;
 	public static String loginData = null;
+	public static boolean ready = false;
 
 	public static boolean login = false;
 	private boolean connected;
@@ -67,6 +68,7 @@ public class Connection extends Thread {
 			
 			while(true) {
 				receivedData = br.readLine();
+//				System.out.println(receivedData);
 				if(receivedData.equals("login successed")) login = true;
 			}
 			
@@ -81,6 +83,10 @@ public class Connection extends Thread {
 
 	public String getReceivedData() {
 		return receivedData;
+	}
+
+	public boolean isReady() {
+		return ready;
 	}
 
 	public String getLoginData() {

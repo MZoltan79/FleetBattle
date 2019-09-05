@@ -53,6 +53,6 @@
             <Font name="System Bold Italic" size="36.0" />
          </font>
       </Label>
-      <Button fx:id="continueButton" layoutX="269.0" layoutY="343.0" mnemonicParsing="false" text="Continue" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="265.0" AnchorPane.rightAnchor="265.0" />
+      <Button fx:id="continueButton" layoutX="269.0" layoutY="343.0" mnemonicParsing="false" onAction="#continueButton" text="Continue" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="265.0" AnchorPane.rightAnchor="265.0" />
    </children>
 </AnchorPane>
