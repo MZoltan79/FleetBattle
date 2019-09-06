@@ -255,6 +255,7 @@ public class AutoPlace {
 		freeFields.removeAll(freeFields);
 		
 		GameData gd = GameData.getInstance();
+		gd.clearOwnFleet();
 		gd.setOwnFleet(fleet);
 		gd.setOwnTable(table);
 //		for(Ship s: gd.getOwnFleet()) {

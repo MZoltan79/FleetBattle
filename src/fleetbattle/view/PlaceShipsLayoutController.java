@@ -6,6 +6,7 @@ import communication.Connection;
 import fleetbattle.MainApp;
 import fleetbattle.model.GameData;
 import fleetbattle.model.GamePlay;
+import fleetbattle.model.Ship;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
@@ -28,6 +29,12 @@ public class PlaceShipsLayoutController {
 		gd = GameData.getInstance();
 		conn = Connection.getInstance();
 		gp = GamePlay.getInstance();
+//		gd.getOwnFleet().add(new Ship("carrier"));
+//		gd.getOwnFleet().add(new Ship("destroyer"));
+//		gd.getOwnFleet().add(new Ship("submarine"));
+//		gd.getOwnFleet().add(new Ship("cruiser"));
+//		gd.getOwnFleet().add(new Ship("patrolboat"));
+		System.out.println(gd.getOwnFleet().size());
 	}
 	
 	
@@ -58,7 +65,6 @@ public class PlaceShipsLayoutController {
 	
 	@FXML
 	Button clearButton;
-	
 	
 	
 	public Canvas getPlacingCanvas() {
@@ -93,8 +99,10 @@ public class PlaceShipsLayoutController {
 			} else {
 				mainApp.getTempShip().setVertical(false);
 			}
+			mainApp.getTempShip().setCoordinates(mainApp.getTempShip().getCoordinates()[0], mainApp.getTempShip().getCoordinates()[1]);
 			if(gd.getOwnFleet().size() < 5) {
 				gd.getOwnFleet().add(mainApp.getTempShip());
+				mainApp.getTempShip().printShip();
 			} else {
 				
 			}
@@ -102,8 +110,6 @@ public class PlaceShipsLayoutController {
 				mainApp.getTempShip().getCoordinates()[1] + " " +
 				mainApp.getTempShip().getCoordinates()[mainApp.getTempShip().getCoordinates().length-2] + "," +
 				mainApp.getTempShip().getCoordinates()[mainApp.getTempShip().getCoordinates().length-1]);
-		System.out.println(mainApp.getTempShip().isVertical());
-		System.out.println(gd.getOwnFleet().size());
 		}
 		showShipData();
 		
@@ -112,72 +118,70 @@ public class PlaceShipsLayoutController {
 	public void handleClearButton() {
 		mainApp.clearTable();
 		showShipData();
-		mainApp.showConnectionSettingsLayout();
 	}
 
 	// Ez kicsit még zavaros!!!
 	
 	public void handleRemoveButton() {
-		int i = 0;
-		for(i = 0 ;i < mainApp.getFleet().size(); i++) {
-			if(mainApp.getFleet().get(i).getSize() == mainApp.getTempShip().getSize()) {
+		if(gd.getOwnFleet().size() > 0) {
+		for(int i = 0 ;i < gd.getOwnFleet().size(); i++) {
+			if(gd.getOwnFleet().get(i).getSize() == mainApp.getTempShip().getSize()) {
+				gd.getOwnFleet().remove(i);
 				break;
 			}
-		}
-		if(gd.getOwnFleet().size() > 0) {
-			gd.getOwnFleet().remove(i);
-		} else {
-			
 		}
 		int x = mainApp.getTempShip().getCoordinates()[0];
 		int y = mainApp.getTempShip().getCoordinates()[1];
 		for(int j = 0; j < mainApp.getTempShip().getSize(); j++) {
 			if(mainApp.getTempShip().isVertical()) {
-				mainApp.getTable()[x][y+j] = false;
+				gd.getOwnTable()[x][y+j] = false;
 			} else {
-				mainApp.getTable()[x+j][y] = false;
+				gd.getOwnTable()[x+j][y] = false;
 			}
 		}
 		showShipData();
 		mainApp.drawTable();
+		}
 		
 	}
 	
 	public void handleAutoPlaceButton() {
+		gd.clearOwnFleet();
 		mainApp.autoPlace();
 		showShipData();
+		System.out.println(gd.getOwnFleet().size());
 	}
 	 
 	public void showShipData() {
 		switch(mainApp.getShipName()) {
-		case "CARRIER": {
+		case "carrier": {
 			typeLabel.setText("Carrier");
 			sizeLabel.setText("5");
-			statusLabel.setText(mainApp.checkShipIsPlaced()? "Placed":"Not placed");
+			checkShipIsPlaced();
 			break;
 		}
-		case "DESTROYER": {
+		case "destroyer": {
 			typeLabel.setText("Destroyer");
 			sizeLabel.setText("4");
-			statusLabel.setText(mainApp.checkShipIsPlaced()? "Placed":"Not placed");
+			checkShipIsPlaced();
 			break;
 		}
-		case "SUBMARINE": {
+		case "submarine": {
 			typeLabel.setText("Submarine");
 			sizeLabel.setText("3");
-			statusLabel.setText(mainApp.checkShipIsPlaced()? "Placed":"Not placed");
+			checkShipIsPlaced();
 			break;
 		}
-		case "CRUISER": {
+		case "cruiser": {
 			typeLabel.setText("Cruiser");
 			sizeLabel.setText("2");
-			statusLabel.setText(mainApp.checkShipIsPlaced()? "Placed":"Not placed");
+			checkShipIsPlaced();
 			break;
 		}
-		case "PATROLBOAT": {
+		case "patrolboat": {
 			typeLabel.setText("Patrolboat");
 			sizeLabel.setText("1");
-			statusLabel.setText(mainApp.checkShipIsPlaced()? "Placed":"Not placed");
+			checkShipIsPlaced();
 			break;
 		}
 		default: {
@@ -188,6 +192,19 @@ public class PlaceShipsLayoutController {
 		}
 		
 		}
+	}
+	
+	public void checkShipIsPlaced() {
+		for(Ship s: gd.getOwnFleet()) {
+			if(s.getName().equals(mainApp.getShipName()) && s.isPlaced) {
+				statusLabel.setText("Placed");
+				break;
+			} else {
+				statusLabel.setText("Not placed");
+			}
+		}	
+//		});
+		
 	}
 	
 }

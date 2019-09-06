@@ -77,6 +77,11 @@ public class GameData {
 		this.connected = connected;
 	}
 	
+	public void clearOwnFleet() {
+		ownFleet = null;
+		ownFleet = new ArrayList<Ship>();
+	}
+	
 	public boolean isConnected() {
 		return connected;
 	}

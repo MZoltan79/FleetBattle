@@ -55,7 +55,7 @@ public class MainApp extends Application {
 	Ship destroyer = new Ship("destroyer");
 	Ship submarine = new Ship("submarine");
 	Ship cruiser = new Ship("cruiser");
-	Ship patrolBoat = new Ship("patrolboat2");
+	Ship patrolBoat = new Ship("patrolboat");
 	ArrayList<Ship> fleet = new ArrayList<>();
 	ArrayList<Ship> ownFleet = new ArrayList<>();
 	
@@ -112,6 +112,11 @@ public class MainApp extends Application {
 				conn.setDaemon(true);
 				conn.start();
 			}
+			ownFleet.add(carrier);
+			ownFleet.add(destroyer);
+			ownFleet.add(submarine);
+			ownFleet.add(cruiser);
+			ownFleet.add(patrolBoat);
 			ap = AutoPlace.getInstance();
 			ap.setupOfFields();
 			Scene scene = new Scene(rootLayout);
@@ -195,6 +200,7 @@ public class MainApp extends Application {
 	}
 	
 	public void autoPlace() {
+//		gd.clearOwnFleet();
 		ap.reset();
 		ap.placeAll();
 		placeShips();
@@ -351,16 +357,26 @@ public class MainApp extends Application {
 	public String getShipName() {
 		FXMLLoader loader = new FXMLLoader();
 		loader.setLocation(MainApp.class.getResource("view/PlaceShipsLayout_new.fxml"));
-		shipName = ((RadioButton)group.getSelectedToggle()).getText().toUpperCase();
-		switch (shipName) {
-			case "CARRIER": tempShip = carrier; break;
-			case "DESTROYER": tempShip = destroyer; break;
-			case "SUBMARINE": tempShip = submarine; break;
-			case "CRUISER": tempShip = cruiser; break;
-			case "PATROLBOAT": tempShip = patrolBoat; break;
-			default: break;
-			}
+		shipName = ((RadioButton)group.getSelectedToggle()).getText().toLowerCase();
+		setTempShip(shipName);
+//		switch (shipName) {
+//			case "carrier": tempShip = carrier; break;
+//			case "destroyer": tempShip = destroyer; break;
+//			case "submarine": tempShip = submarine; break;
+//			case "cruiser": tempShip = cruiser; break;
+//			case "patrolboat": tempShip = patrolBoat; break;
+//			default: break;
+//			}
 		return shipName;
+	}
+	
+	public void setTempShip(String shipName) {
+		for(Ship s: ownFleet) {
+			if(s.getName().equals(shipName)) {
+				tempShip = s;
+			}
+		}
+		
 	}
 	
 	/*
@@ -407,9 +423,9 @@ public class MainApp extends Application {
 		return tempShip;
 	}
 
-	public void setTempShip(Ship tempShip) {
-		this.tempShip = tempShip;
-	}
+//	public void setTempShip(Ship tempShip) {
+//		this.tempShip = tempShip;
+//	}
 
 	public boolean[][] getTable() {
 		return table;

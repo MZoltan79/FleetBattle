@@ -99,12 +99,21 @@ public class Ship {
 		return name;
 	}
 
-
+	public void printShip() {
+		System.out.println(name);
+		System.out.println("size: " + size);
+		System.out.println("vertical: " + vertical);
+		System.out.println("placed: " + isPlaced);
+		System.out.print("coordinates: ");
+		for(int i = 0; i < coordinates.length; i++) {
+			System.out.print(coordinates[i] + ";");
+		}
+		System.out.println("\n");
+	}
 
 
 	public String toString() {
 		return name + ", verical: " + vertical + ", sunk: " + sunk + ", coordinates: " + coordinates[0] + ":" + coordinates[1]; 
-		
 	}
 
 	
