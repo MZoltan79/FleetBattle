@@ -3,7 +3,6 @@ package fleetbattle.model;
 import java.util.ArrayList;
 import java.util.Random;
 import communication.Connection;
-import data.PlayersData;
 import fleetbattle.MainApp;
 import fleetbattle.view.BattleLayoutController;
 import fleetbattle.view.GameOverLayoutController;
@@ -29,7 +28,6 @@ public class GamePlay extends BorderPane{
 	private MainApp mainApp;
 	private AutoPlaceOpponent ao;
 	private GameData gd;
-	private PlayersData pd;
 	private Connection conn;
 	private BattleLayoutController controller;
 	private GameOverLayoutController goController;
@@ -60,7 +58,6 @@ public class GamePlay extends BorderPane{
 		firstLaunch = true;
 		this.setMinSize(398, 398);
 		this.setPrefSize(USE_COMPUTED_SIZE, USE_COMPUTED_SIZE);
-		pd = PlayersData.getInstance();
 		a = -1;
 		b = -1;
 		prevA = a;
@@ -88,8 +85,8 @@ public class GamePlay extends BorderPane{
 
 
 	public void startSinglePlayer() {
-			pd.setPlayer1(new Player("you",0,0));
-			pd.setPlayer2(new Player("AI opponent",0,0));
+			gd.setPlayer1(new Player("you",0,0));
+			gd.setPlayer2(new Player("AI opponent",0,0));
 			controller.drawOwnCanvas();
 			drawOpponentsTable();
 			if(!turn) {
@@ -99,8 +96,8 @@ public class GamePlay extends BorderPane{
 	}
 	
 	public void startMultiPlayer() {
-//		System.out.println(pd.getPlayer1().getNickName());
-//		System.out.println(pd.getPlayer2().getNickName());
+//		System.out.println(gd.getPlayer1().getNickName());
+//		System.out.println(gd.getPlayer2().getNickName());
 		
 		Platform.runLater(new Runnable() {
 			
@@ -125,6 +122,8 @@ public class GamePlay extends BorderPane{
 		gd.getOpponentsFleet().removeAll(gd.getOpponentsFleet());
 		String data = Connection.receivedData;
 		String[] tmp = data.split(";");
+		if(conn.isClientOne()) {
+			
 		if(tmp[0].equals("true") && turn == true) {
 			turn = false;
 			ownTurnWasFirst = false;
@@ -132,9 +131,10 @@ public class GamePlay extends BorderPane{
 			turn = true;
 			ownTurnWasFirst = true;
 		}
+		}
 		controller.showTurnStat();
 		Player temp = new Player(tmp[1],Integer.parseInt(tmp[2]), Integer.parseInt(tmp[3]));
-		pd.setPlayer2(temp);
+		gd.setPlayer2(temp);
 		Ship carrier = new Ship("carrier");
 		Ship destroyer = new Ship("destroyer");
 		Ship submarine = new Ship("submarine");
@@ -168,7 +168,7 @@ public class GamePlay extends BorderPane{
 	
 	public String buildOwnData() {
 		StringBuilder data = new StringBuilder();
-		data.append(turn + ";" + pd.getPlayer1().toString() + ";");
+		data.append(turn + ";" + gd.getPlayer1().toString() + ";");
 		for(int i = 0; i < 5; i++) {
 			data.append(gd.getOwnFleet().get(i).isVertical() + ";" + gd.getOwnFleet().get(i).getCoordinates()[0] + 
 					";" + gd.getOwnFleet().get(i).getCoordinates()[1] + ";");
@@ -193,16 +193,12 @@ public class GamePlay extends BorderPane{
 	public void mouseMovedOwnHit(MouseEvent ev) {
 		x = (int)((ev.getX()-51)/30);
 		y = (int)(ev.getY()-51)/30;
-		System.out.println(x + ":" +y);
 		
 		drawOwnHit();
 		checkOppFleet();
 		drawOpponentsSunkedShips();
 		controller.setOppFleetIndicator(countFleetSize(gd.getOpponentsFleet()).toString());
 		controller.setOwnFleetIndicator(countFleetSize(gd.getOwnFleet()).toString());
-//		if((countFleetSize(gd.opponentsFleet) == 0) || (countFleetSize(gd.getOwnFleet()) == 0)) {
-//			mainApp.showGameOverLayout();
-//		}
 	
 	}
 	
@@ -282,19 +278,19 @@ public class GamePlay extends BorderPane{
 		}
 		if(countFleetSize(gd.getOpponentsFleet()) == 0) {
 			if(countFleetSize(gd.getOwnFleet()) == 0) {
-				pd.getPlayer2().increaseGamesWon();
-				pd.getPlayer1().increaseGamesPlayed();
+				gd.getPlayer2().increaseGamesWon();
+				gd.getPlayer1().increaseGamesPlayed();
 			}
 			if(countFleetSize(gd.getOpponentsFleet()) == 0) {
-				pd.getPlayer1().increaseGamesWon();
-				pd.getPlayer2().increaseGamesPlayed();
+				gd.getPlayer1().increaseGamesWon();
+				gd.getPlayer2().increaseGamesPlayed();
 			}
 			mainApp.showGameOverLayout();
 			firstLaunch = false;
 			resetHits();
 			if(!mainApp.isSinglePlayer()) {
 				conn.send("gameover");
-				conn.send(pd.getPlayer1() + ";" + pd.getPlayer2());
+				conn.send(gd.getPlayer1() + ";" + gd.getPlayer2());
 			}
 		}
 		
@@ -427,12 +423,12 @@ public class GamePlay extends BorderPane{
 								@Override
 								public void run() {
 									if(countFleetSize(gd.getOwnFleet()) == 0) {
-										pd.getPlayer2().increaseGamesWon();
-										pd.getPlayer1().increaseGamesPlayed();
+										gd.getPlayer2().increaseGamesWon();
+										gd.getPlayer1().increaseGamesPlayed();
 									}
 									if(countFleetSize(gd.getOpponentsFleet()) == 0) {
-										pd.getPlayer1().increaseGamesWon();
-										pd.getPlayer2().increaseGamesPlayed();
+										gd.getPlayer1().increaseGamesWon();
+										gd.getPlayer2().increaseGamesPlayed();
 									}
 									mainApp.showGameOverLayout();
 									resetHits();

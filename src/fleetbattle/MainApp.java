@@ -4,15 +4,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import communication.Connection;
-import data.PlayersData;
 import fleetbattle.model.AutoPlace;
 import fleetbattle.model.GameData;
 import fleetbattle.model.GamePlay;
 import fleetbattle.model.Player;
 import fleetbattle.model.Ship;
 import fleetbattle.view.BattleLayoutController;
+import fleetbattle.view.ConnectionSettingsController;
 import fleetbattle.view.GameOverLayoutController;
 import fleetbattle.view.PlaceShipsLayoutController;
+import fleetbattle.view.RootLayoutController;
 import fleetbattle.view.WelcomeLayoutController;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -20,7 +21,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
@@ -46,7 +49,6 @@ public class MainApp extends Application {
 	AutoPlace ap;				
 	GamePlay gp;
 	GameData gd;
-	PlayersData pd;
 	
 	Ship tempShip = null;
 	Ship carrier = new Ship("carrier");
@@ -93,13 +95,17 @@ public class MainApp extends Application {
 			FXMLLoader loader = new FXMLLoader();
 			loader.setLocation(MainApp.class.getResource("view/RootLayout.fxml"));
 			rootLayout = loader.load();
-			pd = PlayersData.getInstance();
-			if(pd.getPlayer1() == null) {
-				pd.setPlayer1(new Player());
+			RootLayoutController controller = new RootLayoutController();
+			controller.setMainApp(this);
+			gd = GameData.getInstance();
+			if(gd.getPlayer1() == null) {
+				gd.setPlayer1(new Player());
 			}
-			if(pd.getPlayer2() == null) {
-				pd.setPlayer2(new Player());
+			if(gd.getPlayer2() == null) {
+				gd.setPlayer2(new Player());
 			}
+			MenuItem settings = (MenuItem) loader.getNamespace().get("settings");
+			settings.setOnAction(e -> showConnectionSettingsLayout());
 			firstLaunchOfWelcomeLayout = true;
 			if(firstLaunchOfWelcomeLayout) {
 				conn = Connection.getInstance();
@@ -108,7 +114,6 @@ public class MainApp extends Application {
 			}
 			ap = AutoPlace.getInstance();
 			ap.setupOfFields();
-			gd = GameData.getInstance();
 			Scene scene = new Scene(rootLayout);
 			scene.getStylesheets().add(getClass().getResource("view/application.css").toExternalForm());
 			primaryStage.setScene(scene);
@@ -129,6 +134,7 @@ public class MainApp extends Application {
 			rootLayout.setCenter(welcomeLayout);
 			WelcomeLayoutController controller = loader.getController();
 			controller.setMainApp(this);
+			Button startButton = (Button) loader.getNamespace().get("startButton");
 			RadioButton singleplayer = (RadioButton) loader.getNamespace().get("singleplayer");
 			RadioButton multiplayer = (RadioButton) loader.getNamespace().get("multiplayer");
 			ToggleGroup modeGroup = new ToggleGroup();
@@ -137,13 +143,15 @@ public class MainApp extends Application {
 			multiplayer.setToggleGroup(modeGroup);
 			if(singlePlayer) {
 				singleplayer.setSelected(true);
+				startButton.setDisable(false);
 			} else {
 				multiplayer.setSelected(true);
+				startButton.setDisable(true);
 			}
 			if(!singlePlayer && PlaceShipsLayoutController.ready ) {
 				opponentReady.setText("Waiting for opponent...");
 				Thread th = new Thread(new Runnable() {
-				String data = "proba";
+				String data = "";
 					
 				@Override
 				public void run() {
@@ -154,12 +162,13 @@ public class MainApp extends Application {
 						} catch (InterruptedException e) {
 						e.printStackTrace();
 						}
-						if(data.length() > 100) {
+						if(data != null && data.length() > 100) {
 							Platform.runLater(new Runnable() {
 								
 								@Override
 								public void run() {
 									opponentReady.setText("Opponent is ready to fight!");
+									startButton.setDisable(false);
 								}
 							});
 							break;
@@ -315,6 +324,29 @@ public class MainApp extends Application {
 		}
 	}
 	
+	public void showConnectionSettingsLayout() {
+		try {
+			AnchorPane connSettings;
+			FXMLLoader loader = new FXMLLoader();
+			loader.setLocation(MainApp.class.getResource("view/ConnectionSettings.fxml"));
+			connSettings = loader.load();
+			
+			Stage settingsStage = new Stage();
+			settingsStage.setTitle("Connection settings");
+			settingsStage.initModality(Modality.WINDOW_MODAL);
+			settingsStage.initOwner(primaryStage);
+			Scene scene = new Scene(connSettings);
+			settingsStage.setScene(scene);
+			ConnectionSettingsController controller = loader.getController();
+			controller.setSettingsStage(settingsStage);
+			controller.setMainApp(this);
+			settingsStage.show();
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	
 	public String getShipName() {
 		FXMLLoader loader = new FXMLLoader();
@@ -448,7 +480,9 @@ public class MainApp extends Application {
 		this.player2 = player2;
 	}
 	
-	
+	public Stage getPrimaryStage() {
+		return primaryStage;
+	}
 	
 	
 

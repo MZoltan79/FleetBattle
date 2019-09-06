@@ -1,7 +1,6 @@
 package fleetbattle.view;
 
 
-import data.PlayersData;
 import fleetbattle.MainApp;
 import fleetbattle.model.GameData;
 import fleetbattle.model.GamePlay;
@@ -20,7 +19,6 @@ public class GameOverLayoutController {
 	MainApp mainApp;
 	Image defeat;
 	Image victory;
-	PlayersData pd;
 	
 	@FXML
 	public void initialize() {
@@ -56,7 +54,6 @@ public class GameOverLayoutController {
 	ImageView resultPicture;
 	
 	public void showResults() {
-		pd = PlayersData.getInstance();
 		gp = GamePlay.getInstance();
 		gd = GameData.getInstance();
 		if(gp.countFleetSize(gd.getOwnFleet()) == 0) {
@@ -73,12 +70,12 @@ public class GameOverLayoutController {
 //			MainApp.player1.increaseGamesWon();
 			
 		}
-		player1Small.setText(pd.getPlayer1().getNickName());
-		player1GamesPlayed.setText(pd.getPlayer1().getGamesPlayed().toString());
-		player1GamesWon.setText(pd.getPlayer1().getGamesWon().toString());
-		player2Small.setText(pd.getPlayer2().getNickName());
-		player2GamesPlayed.setText(pd.getPlayer2().getGamesPlayed().toString());
-		player2GamesWon.setText(pd.getPlayer2().getGamesWon().toString());
+		player1Small.setText(gd.getPlayer1().getNickName());
+		player1GamesPlayed.setText(gd.getPlayer1().getGamesPlayed().toString());
+		player1GamesWon.setText(gd.getPlayer1().getGamesWon().toString());
+		player2Small.setText(gd.getPlayer2().getNickName());
+		player2GamesPlayed.setText(gd.getPlayer2().getGamesPlayed().toString());
+		player2GamesWon.setText(gd.getPlayer2().getGamesWon().toString());
 		
 	}
 	

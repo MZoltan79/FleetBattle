@@ -1,6 +1,5 @@
 package fleetbattle.view;
 
-import data.PlayersData;
 import fleetbattle.MainApp;
 import fleetbattle.model.GameData;
 import fleetbattle.model.GamePlay;
@@ -19,7 +18,6 @@ import javafx.util.Duration;
 public class BattleLayoutController {
 	
 	MainApp mainApp;
-	PlayersData pd;
 	GamePlay gp; 
 	Integer oppFleetSize;
 	Integer ownFleetSize;
@@ -27,7 +25,6 @@ public class BattleLayoutController {
 	GameData gd;
 	
 	public void initialize() {
-		pd = PlayersData.getInstance();
 		gd = GameData.getInstance();
 		gp = GamePlay.getInstance();
 		gp.setController(this);

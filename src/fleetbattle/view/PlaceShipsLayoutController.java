@@ -75,6 +75,7 @@ public class PlaceShipsLayoutController {
 		if(gd.getOwnFleet().size() > 4) {
 			if(!mainApp.isSinglePlayer()) {
 				Connection.sendData = gp.buildOwnData();
+				System.out.println("ready: " + Connection.sendData);
 				conn.sendData();
 			}
 			ready = true;
@@ -111,6 +112,7 @@ public class PlaceShipsLayoutController {
 	public void handleClearButton() {
 		mainApp.clearTable();
 		showShipData();
+		mainApp.showConnectionSettingsLayout();
 	}
 
 	// Ez kicsit még zavaros!!!

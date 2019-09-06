@@ -26,10 +26,5 @@
 			<type>2</type>
 			<location>/home/moricz/workspaces/own-workspace/FleetBattleServer/src</location>
 		</link>
-		<link>
-			<name>Server_Data</name>
-			<type>2</type>
-			<location>/home/moricz/workspaces/own-workspace/FleetBattleServer/src/data</location>
-		</link>
 	</linkedResources>
 </projectDescription>

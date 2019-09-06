@@ -16,7 +16,7 @@
             </Menu>
             <Menu mnemonicParsing="false" text="Edit">
                <items>
-                  <MenuItem mnemonicParsing="false" text="Settings" />
+                  <MenuItem fx:id="settings" mnemonicParsing="false" onAction="#handleSettings" text="Server settings" />
                </items>
             </Menu>
             <Menu mnemonicParsing="false" text="Help">
