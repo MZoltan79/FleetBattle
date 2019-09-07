@@ -29,12 +29,6 @@ public class PlaceShipsLayoutController {
 		gd = GameData.getInstance();
 		conn = Connection.getInstance();
 		gp = GamePlay.getInstance();
-//		gd.getOwnFleet().add(new Ship("carrier"));
-//		gd.getOwnFleet().add(new Ship("destroyer"));
-//		gd.getOwnFleet().add(new Ship("submarine"));
-//		gd.getOwnFleet().add(new Ship("cruiser"));
-//		gd.getOwnFleet().add(new Ship("patrolboat"));
-		System.out.println(gd.getOwnFleet().size());
 	}
 	
 	
@@ -81,7 +75,6 @@ public class PlaceShipsLayoutController {
 		if(gd.getOwnFleet().size() > 4) {
 			if(!mainApp.isSinglePlayer()) {
 				Connection.sendData = gp.buildOwnData();
-				System.out.println("ready: " + Connection.sendData);
 				conn.sendData();
 			}
 			ready = true;
@@ -106,10 +99,6 @@ public class PlaceShipsLayoutController {
 			} else {
 				
 			}
-		System.out.println("recently placed: " + mainApp.getTempShip().getCoordinates()[0] + "," +
-				mainApp.getTempShip().getCoordinates()[1] + " " +
-				mainApp.getTempShip().getCoordinates()[mainApp.getTempShip().getCoordinates().length-2] + "," +
-				mainApp.getTempShip().getCoordinates()[mainApp.getTempShip().getCoordinates().length-1]);
 		}
 		showShipData();
 		
@@ -124,23 +113,29 @@ public class PlaceShipsLayoutController {
 	
 	public void handleRemoveButton() {
 		if(gd.getOwnFleet().size() > 0) {
-		for(int i = 0 ;i < gd.getOwnFleet().size(); i++) {
-			if(gd.getOwnFleet().get(i).getSize() == mainApp.getTempShip().getSize()) {
-				gd.getOwnFleet().remove(i);
-				break;
+			for(int i = 0; i < gd.getOwnFleet().size(); i++) {
+				if(gd.getOwnFleet().get(i).getSize() == mainApp.getTempShip().getSize()) {
+					mainApp.setTempShip(gd.getOwnFleet().get(i));
+				}
 			}
-		}
-		int x = mainApp.getTempShip().getCoordinates()[0];
-		int y = mainApp.getTempShip().getCoordinates()[1];
-		for(int j = 0; j < mainApp.getTempShip().getSize(); j++) {
-			if(mainApp.getTempShip().isVertical()) {
-				gd.getOwnTable()[x][y+j] = false;
-			} else {
-				gd.getOwnTable()[x+j][y] = false;
+			for(int i = 0 ;i < gd.getOwnFleet().size(); i++) {
+				if(gd.getOwnFleet().get(i).getSize() == mainApp.getTempShip().getSize()) {
+					gd.getOwnFleet().remove(i);
+					break;
+				}
 			}
-		}
-		showShipData();
-		mainApp.drawTable();
+			mainApp.getTempShip().printShip();
+			int x = mainApp.getTempShip().getCoordinates()[0];
+			int y = mainApp.getTempShip().getCoordinates()[1];
+			for(int j = 0; j < mainApp.getTempShip().getSize(); j++) {
+				if(mainApp.getTempShip().isVertical()) {
+					gd.getOwnTable()[x][y+j] = false;
+				} else {
+					gd.getOwnTable()[x+j][y] = false;
+				}
+			}
+			showShipData();
+			mainApp.drawTable();
 		}
 		
 	}
@@ -149,7 +144,6 @@ public class PlaceShipsLayoutController {
 		gd.clearOwnFleet();
 		mainApp.autoPlace();
 		showShipData();
-		System.out.println(gd.getOwnFleet().size());
 	}
 	 
 	public void showShipData() {
@@ -195,6 +189,9 @@ public class PlaceShipsLayoutController {
 	}
 	
 	public void checkShipIsPlaced() {
+		if(gd.getOwnFleet().size() == 0) {
+			statusLabel.setText("Not placed");
+		}
 		for(Ship s: gd.getOwnFleet()) {
 			if(s.getName().equals(mainApp.getShipName()) && s.isPlaced) {
 				statusLabel.setText("Placed");

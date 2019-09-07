@@ -66,6 +66,7 @@ public class MainApp extends Application {
 	private boolean[][] table;
 	private boolean singlePlayer = true;
 	private boolean firstLaunchOfWelcomeLayout;
+	private boolean firstLaunch = true;
 	static int x = 0;
 	static int y = 0;
 	String shipName = "CARRIER";
@@ -370,14 +371,6 @@ public class MainApp extends Application {
 		return shipName;
 	}
 	
-	public void setTempShip(String shipName) {
-		for(Ship s: ownFleet) {
-			if(s.getName().equals(shipName)) {
-				tempShip = s;
-			}
-		}
-		
-	}
 	
 	/*
 	 *  Tábla méretéhez igazítva állítja be "x" és "y" értékét, mely a hajók koordinátájának
@@ -423,9 +416,18 @@ public class MainApp extends Application {
 		return tempShip;
 	}
 
-//	public void setTempShip(Ship tempShip) {
-//		this.tempShip = tempShip;
-//	}
+	public void setTempShip(String shipName) {
+		for(Ship s: ownFleet) {
+			if(s.getName().equals(shipName)) {
+				tempShip = s;
+			}
+		}
+		
+	}
+
+	public void setTempShip(Ship tempShip) {
+		this.tempShip = tempShip;
+	}
 
 	public boolean[][] getTable() {
 		return table;
@@ -498,6 +500,14 @@ public class MainApp extends Application {
 	
 	public Stage getPrimaryStage() {
 		return primaryStage;
+	}
+
+	public boolean isFirstLaunch() {
+		return firstLaunch;
+	}
+
+	public void setFirstLaunch(boolean firstLaunch) {
+		this.firstLaunch = firstLaunch;
 	}
 	
 	

@@ -31,7 +31,6 @@ public class GamePlay extends BorderPane{
 	private Connection conn;
 	private BattleLayoutController controller;
 	private GameOverLayoutController goController;
-	private boolean firstLaunch;
 	
 	private Canvas canvas;
 	private GraphicsContext gc;
@@ -55,7 +54,6 @@ public class GamePlay extends BorderPane{
 	private Integer turns;
 	
 	private GamePlay() {
-		firstLaunch = true;
 		this.setMinSize(398, 398);
 		this.setPrefSize(USE_COMPUTED_SIZE, USE_COMPUTED_SIZE);
 		a = -1;
@@ -96,9 +94,6 @@ public class GamePlay extends BorderPane{
 	}
 	
 	public void startMultiPlayer() {
-//		System.out.println(gd.getPlayer1().getNickName());
-//		System.out.println(gd.getPlayer2().getNickName());
-		
 		Platform.runLater(new Runnable() {
 			
 			@Override
@@ -167,6 +162,22 @@ public class GamePlay extends BorderPane{
 	 */
 	
 	public String buildOwnData() {
+		Ship swap;
+		int max;
+		for(int i = gd.getOwnFleet().size()-1; i > 0; i--) {
+			max = i;
+			for(int j = i-1; j >= 0; j--) {
+				if(gd.getOwnFleet().get(j).getSize() < gd.getOwnFleet().get(max).getSize()) {
+					max = j;
+				}
+			}
+			if(max != i) {
+				swap = gd.getOwnFleet().get(i);
+				gd.getOwnFleet().set(i, gd.getOwnFleet().get(max));
+				gd.getOwnFleet().set(max, swap);
+						
+			}
+		}
 		StringBuilder data = new StringBuilder();
 		data.append(turn + ";" + gd.getPlayer1().toString() + ";");
 		for(int i = 0; i < 5; i++) {
@@ -184,9 +195,9 @@ public class GamePlay extends BorderPane{
 	
 
 	public void ownTurn() {
-		if(firstLaunch) {
+		if(mainApp.isFirstLaunch()) {
 			canvas.addEventFilter(MouseEvent.MOUSE_CLICKED, this::mouseMovedOwnHit);
-			
+			mainApp.setFirstLaunch(false);
 		}
 	}
 	
@@ -286,7 +297,6 @@ public class GamePlay extends BorderPane{
 				gd.getPlayer2().increaseGamesPlayed();
 			}
 			mainApp.showGameOverLayout();
-			firstLaunch = false;
 			resetHits();
 			if(!mainApp.isSinglePlayer()) {
 				conn.send("gameover");
