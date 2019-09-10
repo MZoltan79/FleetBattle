@@ -46,7 +46,7 @@ public class ConnectionSettingsController {
 			Alert alert = new Alert(AlertType.WARNING);
 			alert.initOwner(mainApp.getPrimaryStage());
 			alert.setTitle("Fields are empty");
-			alert.setHeaderText("All the fields are empty4");
+			alert.setHeaderText("All the fields are empty!");
 			alert.setContentText("You didn't type anything...");
 			
 			alert.showAndWait();

@@ -22,8 +22,8 @@ public class GameOverLayoutController {
 	
 	@FXML
 	public void initialize() {
-		defeat = new Image("file:src/fleetbattle/view/defeat.jpg",600,300,true,false);
-		victory = new Image("file:src/fleetbattle/view/victory.jpg",600,300,true,false);
+		defeat = new Image(MainApp.class.getResourceAsStream("view/defeat.jpg"),600,300,true,false);
+		victory = new Image(MainApp.class.getResourceAsStream("view/victory.jpg"),600,300,true,false);
 	}
 	
 	@FXML
@@ -59,16 +59,9 @@ public class GameOverLayoutController {
 		if(gp.countFleetSize(gd.getOwnFleet()) == 0) {
 			display.setText("DEFEAT");
 			resultPicture.setImage(defeat);
-//			MainApp.player1.increaseGamesPlayed();
-//			MainApp.player2.increaseGamesPlayed();
-//			MainApp.player2.increaseGamesWon();
 		} else {
 			display.setText("VICTORY");
 			resultPicture.setImage(victory);
-//			MainApp.player2.increaseGamesPlayed();
-//			MainApp.player1.increaseGamesPlayed();
-//			MainApp.player1.increaseGamesWon();
-			
 		}
 		player1Small.setText(gd.getPlayer1().getNickName());
 		player1GamesPlayed.setText(gd.getPlayer1().getGamesPlayed().toString());

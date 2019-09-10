@@ -85,6 +85,7 @@ public class PlaceShipsLayoutController {
 
 	public void handlePlaceButton() {
 		if(mainApp.getTempShip() != null) {
+			mainApp.getTempShip().checkEndPoints();
 			mainApp.getTempShip().isPlaced = true;
 			if(mainApp.getTempShip().getCoordinates()[0] == 
 					mainApp.getTempShip().getCoordinates()[mainApp.getTempShip().getCoordinates().length-2]) {
@@ -109,7 +110,6 @@ public class PlaceShipsLayoutController {
 		showShipData();
 	}
 
-	// Ez kicsit még zavaros!!!
 	
 	public void handleRemoveButton() {
 		if(gd.getOwnFleet().size() > 0) {
@@ -200,8 +200,6 @@ public class PlaceShipsLayoutController {
 				statusLabel.setText("Not placed");
 			}
 		}	
-//		});
-		
 	}
 	
 }

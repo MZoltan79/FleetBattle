@@ -33,8 +33,6 @@ public class Connection extends Thread {
 	private static Connection instance;
 	
 	private Connection() {
-//		host = "localhost";
-//		port = 11111;
 		loadData();
 	}
 	
@@ -65,8 +63,8 @@ public class Connection extends Thread {
 					} else {
 						socket = new Socket(host, port);
 					}
-					System.out.println("socket connected: " + socket.isConnected());
-					System.out.println("port: " + socket.getLocalPort());
+//					System.out.println("socket connected: " + socket.isConnected());
+//					System.out.println("port: " + socket.getLocalPort());
 					br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 					pw = new PrintWriter(socket.getOutputStream(), true);
 					break;
@@ -164,7 +162,7 @@ public class Connection extends Thread {
 	public void loadData() {
 		BufferedReader br;
 		try {
-			br = new BufferedReader(new FileReader("src/communication/connection.txt"));
+			br = new BufferedReader(new FileReader("connection.txt"));
 			while(br.ready()) {
 				String line = br.readLine();
 				String[] tmp = line.split(";");
@@ -175,7 +173,6 @@ public class Connection extends Thread {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -183,11 +180,10 @@ public class Connection extends Thread {
 	public void saveData() {
 		PrintWriter pw;
 		try {
-			pw = new PrintWriter(new FileWriter("src/communication/connection.txt"));
+			pw = new PrintWriter(new FileWriter("connection.txt"));
 			pw.println(host + ";" + port.toString());
 			pw.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		

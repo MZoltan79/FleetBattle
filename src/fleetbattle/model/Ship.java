@@ -40,6 +40,10 @@ public class Ship {
 		sunk = true;
 	}
 
+	public void setSunk(boolean sunk) {
+		this.sunk = sunk;
+	}
+
 	
 	public Integer getSize() {
 		return size;
@@ -109,6 +113,20 @@ public class Ship {
 			System.out.print(coordinates[i] + ";");
 		}
 		System.out.println("\n");
+	}
+	
+	public void checkEndPoints() {
+		int swap;
+		if(coordinates[0] > coordinates[coordinates.length-2]) {
+			swap = coordinates[0];
+			coordinates[0] = coordinates[coordinates.length-2];
+			coordinates[coordinates.length-2] = swap;
+		}
+		if(coordinates[1] > coordinates[coordinates.length-1]) {
+			swap = coordinates[1];
+			coordinates[1] = coordinates[coordinates.length-1];
+			coordinates[coordinates.length-1] = swap;
+		}
 	}
 
 

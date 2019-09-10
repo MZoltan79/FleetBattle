@@ -46,31 +46,31 @@ public class MainApp extends Application {
 	private Canvas canvas = new Canvas(398,398);
 	private GraphicsContext gc = canvas.getGraphicsContext2D();
 	
-	AutoPlace ap;				
-	GamePlay gp;
-	GameData gd;
-	
-	Ship tempShip = null;
-	Ship carrier = new Ship("carrier");
-	Ship destroyer = new Ship("destroyer");
-	Ship submarine = new Ship("submarine");
-	Ship cruiser = new Ship("cruiser");
-	Ship patrolBoat = new Ship("patrolboat");
-	ArrayList<Ship> fleet = new ArrayList<>();
-	ArrayList<Ship> ownFleet = new ArrayList<>();
-	
+	private AutoPlace ap;				
+	private GamePlay gp;
+	private GameData gd;
+	private Connection conn;
 
 	public static Player player1;
 	public static Player player2;
-	Connection conn;
+	
 	private boolean[][] table;
+
 	private boolean singlePlayer = true;
 	private boolean firstLaunchOfWelcomeLayout;
 	private boolean firstLaunch = true;
-	static int x = 0;
-	static int y = 0;
-	String shipName = "CARRIER";
+	private static int x = 0;
+	private static int y = 0;
+	private String shipName = "CARRIER";
 
+	private Ship tempShip = null;
+	private Ship carrier = new Ship("carrier");
+	private Ship destroyer = new Ship("destroyer");
+	private Ship submarine = new Ship("submarine");
+	private Ship cruiser = new Ship("cruiser");
+	private Ship patrolBoat = new Ship("patrolboat");
+	private ArrayList<Ship> fleet = new ArrayList<>();
+	private ArrayList<Ship> ownFleet = new ArrayList<>();
 	
 	
 	@Override
@@ -78,7 +78,8 @@ public class MainApp extends Application {
 		this.primaryStage = primaryStage;
 		this.primaryStage.setResizable(false);
 		this.primaryStage.setTitle("Fleet Battle");
-		this.primaryStage.getIcons().add(new Image("file:src/fleetbattle/view/Battleship-icon3.png"));
+		Image icon = new Image(MainApp.class.getResourceAsStream("view/Battleship-icon3.png"));
+		this.primaryStage.getIcons().add(icon);
 		initRootLayout();
 		showWelcomeLayout();
 	}
@@ -89,24 +90,15 @@ public class MainApp extends Application {
 	
 
 	
-	// Ez az alap stage. a root...
+	// initRootLayout() - initializes the root layout, and some game data.
 	
 	public void initRootLayout() {
 		try {
-			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(MainApp.class.getResource("view/RootLayout.fxml"));
-			rootLayout = loader.load();
-			RootLayoutController controller = new RootLayoutController();
-			controller.setMainApp(this);
 			gd = GameData.getInstance();
-			if(gd.getPlayer1() == null) {
-				gd.setPlayer1(new Player());
-			}
-			if(gd.getPlayer2() == null) {
-				gd.setPlayer2(new Player());
-			}
-			MenuItem settings = (MenuItem) loader.getNamespace().get("settings");
-			settings.setOnAction(e -> showConnectionSettingsLayout());
+			ap = AutoPlace.getInstance();
+			ap.setupOfFields();
+			if(gd.getPlayer1() == null) gd.setPlayer1(new Player());
+			if(gd.getPlayer2() == null) gd.setPlayer2(new Player());
 			firstLaunchOfWelcomeLayout = true;
 			if(firstLaunchOfWelcomeLayout) {
 				conn = Connection.getInstance();
@@ -118,8 +110,14 @@ public class MainApp extends Application {
 			ownFleet.add(submarine);
 			ownFleet.add(cruiser);
 			ownFleet.add(patrolBoat);
-			ap = AutoPlace.getInstance();
-			ap.setupOfFields();
+
+			FXMLLoader loader = new FXMLLoader();
+			loader.setLocation(MainApp.class.getResource("view/RootLayout.fxml"));
+			rootLayout = loader.load();
+			RootLayoutController controller = new RootLayoutController();
+			controller.setMainApp(this);
+			MenuItem settings = (MenuItem) loader.getNamespace().get("settings");
+			settings.setOnAction(e -> showConnectionSettingsLayout());
 			Scene scene = new Scene(rootLayout);
 			scene.getStylesheets().add(getClass().getResource("view/application.css").toExternalForm());
 			primaryStage.setScene(scene);
@@ -129,7 +127,7 @@ public class MainApp extends Application {
 		}
 	}
 	
-	// Ez a kezdőképernyö
+	// showWelcomeLayout() - this layout returns several times during gameplay. Handles single-, multiplayer mode, indicates the opponents status
 	
 	public void showWelcomeLayout() {
 		
@@ -208,7 +206,7 @@ public class MainApp extends Application {
 		drawTable();
 	}
 
-	//PlaceShipsLayout ablakban ez rajzolja a táblát
+	// drawTable() this method draws the table in PlaceShipsLayout.
 	
 	public void drawTable() {
 		fleet = gd.getOwnFleet();
@@ -239,7 +237,7 @@ public class MainApp extends Application {
 		}
 	}
 	
-	// Itt manuális lerakásnál MouseEvent-ek segítségével lehet letenni a hajókat
+	// placeShips() - Loads PlaceShipsLayout.fxml. While placing ships manually, handles several MouseEvents, to set ships' datas. 
 	
 	public void placeShips() {
 		try {
@@ -280,7 +278,7 @@ public class MainApp extends Application {
 		}
 	}
 	
-	// Ez a battle (maga a játék) képernyő
+	// showBattleLayout() - Loads BattleLayout.fxml and some minor data. Here happens the fight :)
 	
 	public void showBattleLayout() {
 		try {
@@ -307,6 +305,8 @@ public class MainApp extends Application {
 		}
 	}
 	
+	// showGameOverLayout() - loads GameOverLayout.fxml. Shows result of a battle.
+	
 	public void showGameOverLayout() {
 		try {
 			AnchorPane gameOverLayout;
@@ -330,6 +330,8 @@ public class MainApp extends Application {
 			e.printStackTrace();
 		}
 	}
+	
+	// showConnectionSettingsLayout() - loads ConnectionSettings.fxml. Here u can edit connection settings to the server.
 	
 	public void showConnectionSettingsLayout() {
 		try {
@@ -355,26 +357,19 @@ public class MainApp extends Application {
 	}
 	
 	
+	// This is for display ships name while placing ships.
+	
 	public String getShipName() {
 		FXMLLoader loader = new FXMLLoader();
 		loader.setLocation(MainApp.class.getResource("view/PlaceShipsLayout_new.fxml"));
 		shipName = ((RadioButton)group.getSelectedToggle()).getText().toLowerCase();
 		setTempShip(shipName);
-//		switch (shipName) {
-//			case "carrier": tempShip = carrier; break;
-//			case "destroyer": tempShip = destroyer; break;
-//			case "submarine": tempShip = submarine; break;
-//			case "cruiser": tempShip = cruiser; break;
-//			case "patrolboat": tempShip = patrolBoat; break;
-//			default: break;
-//			}
 		return shipName;
 	}
 	
 	
 	/*
-	 *  Tábla méretéhez igazítva állítja be "x" és "y" értékét, mely a hajók koordinátájának
-	 *  a rögzítéséhez kell.
+	 * Sets the values of 'x' and 'y'. These are necessary to set ship's coordinates while placing ships, and sets hits during battle; 
 	 */
 	
 	public void mouseMoved(MouseEvent ev) {
@@ -383,7 +378,7 @@ public class MainApp extends Application {
 		
 	}
 	
-	// úgyszintén az elhelyezéshez kell, de ez már a rögzíti is a hajókat a table-ön.
+	// This deploys the selected ships on the table.
 	
 	public void mouseDraggedOrReleased(MouseEvent ev) {
 		x = (int)((ev.getX()-51)/30);
@@ -396,21 +391,22 @@ public class MainApp extends Application {
 		drawTable();
 	}
 	
-	// Ez frissíti a tábla kirajzolását.
+	// redraws table
 	public void mousePressed(MouseEvent ev) {
 		if(x >= 0 && y >= 0) {
 			drawTable();
-//			System.out.println(x + " " + y);
 		}
 	}
 	
-	// Ez az adot hajó kezdö és vég pontjait rögzíti a Ship coordinates-be.
+	// Sets the selected ship's start and end points to its coordinates.
 	public void mousePrimaryPressed(MouseEvent ev) {
 		if(ev.getButton() == MouseButton.PRIMARY) tempShip.setStartpoint(x, y);
 	}
+	
 	public void mousePrimaryReleased(MouseEvent ev) {
 		if(ev.getButton() == MouseButton.PRIMARY) tempShip.setEndpoint(x, y);
 	}
+	
 	
 	public Ship getTempShip() {
 		return tempShip;
@@ -443,9 +439,7 @@ public class MainApp extends Application {
 				gd.getOwnTable()[i][j] = false;
 			}
 		}
-		if(gd.getOwnFleet().size() != 0) {
 			gd.getOwnFleet().removeAll(gd.getOwnFleet());
-		}
 		drawTable();
 	}
 	
@@ -486,18 +480,10 @@ public class MainApp extends Application {
 		return player1;
 	}
 
-	public void setPlayer1(Player player1) {
-		this.player1 = player1;
-	}
-
 	public Player getPlayer2() {
 		return player2;
 	}
 
-	public void setPlayer2(Player player2) {
-		this.player2 = player2;
-	}
-	
 	public Stage getPrimaryStage() {
 		return primaryStage;
 	}

@@ -2,19 +2,16 @@ package fleetbattle.model;
 
 import java.util.ArrayList;
 
-import communication.Connection;
-
 public class GameData {
 	
-	ArrayList<Ship> ownFleet;
-	ArrayList<Ship> opponentsFleet;
-	boolean[][] ownTable;
-	boolean[][] opponentsTable;
-	boolean connected;
+	private ArrayList<Ship> ownFleet;
+	private ArrayList<Ship> opponentsFleet;
+	private boolean[][] ownTable;
+	private boolean[][] opponentsTable;
+	private boolean connected;
 	private Player player1;
 	private Player player2;
-	private Connection conn;
-	
+
 	private static GameData instance;
 	
 	public static GameData getInstance() {

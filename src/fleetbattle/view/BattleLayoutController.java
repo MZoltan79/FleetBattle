@@ -59,8 +59,6 @@ public class BattleLayoutController {
 	public void showTurnStat() {
 		oppFleetSize = gp.countFleetSize(gd.getOpponentsFleet());
 		ownFleetSize = gp.countFleetSize(gd.getOwnFleet());
-//		System.out.println("oppfleet: "+oppFleetSize);
-//		System.out.println("ownFleet: "+ownFleetSize);
 		final KeyFrame kf1 = new KeyFrame(Duration.seconds(0.1), e -> turnIndicator.setText(gp.isTurn()? "Your turn":"Enemy's turn"));
 		final KeyFrame kf2 = new KeyFrame(Duration.seconds(0.1), e -> turnCounter.setText(gp.getTurns().toString()));
 		final KeyFrame kf3 = new KeyFrame(Duration.seconds(0.1), e -> oppFleet.setText(oppFleetSize.toString()));
@@ -101,7 +99,6 @@ public class BattleLayoutController {
 	}
 	
 	public void drawOpponentsHit() {
-//		showTurnStat();
 		Font font = new Font(15);
 		gc.setFont(font);
 		if(gp.getA() > -1 && gp.getB() > -1) {
@@ -126,15 +123,14 @@ public class BattleLayoutController {
 	}
 	
 	public void updateMPGui() {
-		final KeyFrame kf1 = new KeyFrame(Duration.seconds(Math.random()), e -> drawOpponentsHit());
-		final KeyFrame kf2 = new KeyFrame(Duration.seconds(1.1), e -> drawOwnSunkedShips());
+		final KeyFrame kf1 = new KeyFrame(Duration.seconds(Math.random()+2), e -> drawOpponentsHit());
+		final KeyFrame kf2 = new KeyFrame(Duration.seconds(1.5), e -> drawOwnSunkedShips());
 		final KeyFrame kf3 = new KeyFrame(Duration.seconds(1.1), e -> {
 			if(ownFleetSize == 0) {
 				mainApp.showGameOverLayout();
 			}
 		});
 		final Timeline tl = new Timeline(kf1, kf2, kf3);
-//		final Timeline tl = new Timeline(kf1, kf2);
 		Platform.runLater(tl::play);
 		
 	}

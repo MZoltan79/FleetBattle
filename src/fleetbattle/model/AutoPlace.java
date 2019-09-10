@@ -5,8 +5,7 @@ import java.util.Random;
 
 
 /*
- *  A hajók random elhelyezése történik ebben a class-ban. később még ki fogok venni 
- *  felesleges adatokat, de még nem tudom mi kellhet még innen... 
+ *  A hajók random elhelyezése történik ebben a class-ban. 
  */
 public class AutoPlace {
 	
@@ -30,14 +29,6 @@ public class AutoPlace {
 	
 	private static boolean[][]table = new boolean[10][10]; // ez tárolja a hajókat a táblán.
 	
-	private static boolean[][]hits = new boolean[10][10]; // ez tárol(hat)ja a lövéseket.
-/*
- * A játék eredetileg konzolra készült, a visual nevű mátrix a konzolon való megjelenítésre
- * készült. Nagy valószínűséggel nem lesz rá szükség, de tesztelés végett megtartanám, mert
- * itt azért egyszerűbb tesztelni mint a MainApp-ban.	
- */
-	private static char[][]visual = new char[10][10];
-
 	protected static Random rnd = new Random(); // ezt nem kell magyarázni :)
 	
 	private static ArrayList<Ship>fleet = new ArrayList<Ship>(); // ez tárolja a már letett hajókat.
@@ -57,29 +48,6 @@ public class AutoPlace {
 	 * ahonnan "indulhat" a hajó.		
 	 */
 	protected ArrayList<Integer[]> freeFields = new ArrayList<>();
-	
-	
-	private static int hitsremaining = 15;
-	
-	private static int turns = 0;
-	
-	private static int y;
-	
-	private static int x;
-
-	private static int yHit;
-	
-	private static int xHit;
-	
-	
-	
-	private static char sunk = '⬛';
-
-	private static char hit = '❌';
-	
-	private static char missed = '❎';
-	
-	private static char water = '⬜';
 
 	public ArrayList<Ship> getFleet() {
 		return fleet;
@@ -130,7 +98,6 @@ public class AutoPlace {
 	 */
 
 	private void checkFields(Ship ship) {
-		int size = ship.getSize();
 		for(int i = 0; i < fieldsCoordinates.size(); i++) {
 			
 		Integer[] startPoints = fieldsCoordinates.get(i);
@@ -222,9 +189,6 @@ public class AutoPlace {
 		placeShip(carrier);
 		fleet.add(carrier);
 		freeFields.removeAll(freeFields);
-//		System.out.println("game carrier: " + carrier.coordinates[0] + "," + carrier.coordinates[1] 
-//				+ " " + carrier.coordinates[8] + "," + carrier.coordinates[9]);
-//		System.out.println(carrier.isVertical());
 		
 		destroyer();
 		checkFields(destroyer);
@@ -258,9 +222,6 @@ public class AutoPlace {
 		gd.clearOwnFleet();
 		gd.setOwnFleet(fleet);
 		gd.setOwnTable(table);
-//		for(Ship s: gd.getOwnFleet()) {
-//			System.out.println(s.name() + " koordináták: " + s.getCoordinates()[0] + "," +s.getCoordinates()[1]);
-//		}
 	}
 	
 	/*
@@ -268,9 +229,7 @@ public class AutoPlace {
 	 */
 
 	public void reset() { // ez a MainApp-al kommunikál, amikor autoplace-re nyomunk.
-		turns = 0;
 		fleet.removeAll(fleet);
-		hitsremaining = 15;
 		for(int i = 0; i < table.length; i++) {
 			for (int j = 0; j < table[i].length; j++) {
 				table[i][j] = false;
@@ -282,10 +241,6 @@ public class AutoPlace {
 		return table;
 	}
 	
-	public void setFleet(ArrayList<Ship> fleet) {
-		this.fleet = fleet;
-	}
-	
 	public boolean isOwnFleetPlaced() {
 		return ownFleetPlaced;
 	}
@@ -293,184 +248,9 @@ public class AutoPlace {
 	public void setOwnFleetPlaced(boolean ownFleetPlaced) {
 		AutoPlace.ownFleetPlaced = ownFleetPlaced;
 	}
-
-
-	
-	
-	
-	
-	
-	
-	/*
-	 * innentől lefele:		 UNDER CONSTRUCTION !!!
-	 * 
-	 */
-	private void hit() {
-		System.out.println("Add meg a sor számát 0-9-ig! sor = ");
-//		xHit = sc.nextInt();
-		System.out.println("Add meg az oszlop számát 0-9-ig! sor = ");
-//		yHit = sc.nextInt();
-		if(hits[xHit][yHit]== true) {
-			System.out.println("ide már lőttél!");
-			hit();
-		} else {
-			if(table[xHit][yHit]==false) {
-				System.out.println("Nem talált!");
-//				visual[xHit][yHit]=missed;
-				hits[xHit][yHit] = true;
-				turns++;
-			} else {
-				System.out.println("Talált!");
-				hits[xHit][yHit] = true;
-//				visual[xHit][yHit]=hit;
-				turns++;
-				hitsremaining--;
-			}
-		}
-	}
-	
-//	private void checkShip(Ship ship) {
-//		int tmp[] = ship.getCoordinates();
-//		if(ship.isVertical() == true) {
-//			for(int i = ship.getCoordinates()[0]; i < ship.getCoordinates()[2]+1; i++) {
-//				if(table[i][ship.getCoordinates()[1]] == false) ship.hit--;
-//			}
-//		} else {
-//			for(int i = ship.getCoordinates()[1]; i < ship.getCoordinates()[3]+1;i++) {
-//				if(table[ship.getCoordinates()[0]][i] == false) ship.hit--;
-//			}
-//		}
-//		if (ship.getHit()==0) {
-//			ship.setSunk();
-//			if(ship.isVertical() == true) {
-//				for(int i = ship.getCoordinates()[0]; i < ship.getCoordinates()[2]+1; i++) {
-//					visual[i][ship.getCoordinates()[1]] = sunk;
-//				}
-//			} else {
-//				for(int i = ship.getCoordinates()[1]; i < ship.getCoordinates()[3]+1;i++) {
-//					visual[ship.getCoordinates()[0]][i] = sunk;
-//				}
-//			}
-//		}
-//	}
-	
-//	private void checkAll() {
-//		for(Ship s:fleet) {
-//			checkShip(s);
-//		}
-//	}
 	
 	public Ship getShip(Ship ship) {
 		return ship;
-	}
-	
-	
-	
-
-	/*
-	 * main függvényre szerintem nem lesz szükség, egyelőre megtartanám lehetséges
-	 * tesztelések végett.
-	 */
-	
-	public void draw() {
-		System.out.println(table[0][0]);
-		System.out.println("freefields size = " + freeFields.size());
-		System.out.println("fleet size = " + fleet.size());
-		System.out.println(fieldsCoordinates.get(1)[0] + ", " + fieldsCoordinates.get(1)[1]);
-		for(int i = 0; i < 10; i++) {
-			for(int j = 0; j < 10; j++) {
-				if(table[i][j]==true) {
-					System.out.print(hit);
-				} else {
-					System.out.print(water);
-				}
-			}
-			System.out.println();
-		}
-		fleet.forEach(e -> {
-			System.out.println(e.getName() + ": " + e.getCoordinates()[0] + ", " +
-					e.getCoordinates()[1] + ", " +
-					e.getCoordinates()[e.getCoordinates().length-2] + ", " +
-					e.getCoordinates()[e.getCoordinates().length-1]);
-		});
-		System.out.println("carrier");
-		reset();
-		System.out.println(table[0][0]);
-		System.out.println("freefields size = " + freeFields.size());
-		System.out.println("fleet size = " + fleet.size());
-		System.out.println(fieldsCoordinates.get(1)[0] + ", " + fieldsCoordinates.get(1)[1]);
-		for(int i = 0; i < 10; i++) {
-			for(int j = 0; j < 10; j++) {
-				if(table[i][j]==true) {
-					System.out.print(hit);
-				} else {
-					System.out.print(water);
-				}
-			}
-			System.out.println();
-		}
-		fleet.forEach(e -> {
-			System.out.println(e.getCoordinates()[0] + ", " +
-					e.getCoordinates()[1] + ", " +
-					e.getCoordinates()[2] + ", " +
-					e.getCoordinates()[3]);
-		});
-	}
-	
-	public static void main(String[] args) {
-		
-		GameData gd = GameData.getInstance();
-//		GamePlay gp = GamePlay.getInstance();
-		AutoPlace game = new AutoPlace();
-		game.setupOfFields();
-		game.placeAll();
-		System.out.println(fleet.get(4));
-//		System.out.println(gd.getOwnFleet().get(1));
-//		System.out.println(gp.buildOwnData());
-		
-		
-		System.out.println(table[0][0]);
-		System.out.println("freefields size = " + game.freeFields.size());
-		System.out.println("fleet size = " + fleet.size());
-		System.out.println(fieldsCoordinates.get(1)[0] + ", " + fieldsCoordinates.get(1)[1]);
-		for(int i = 0; i < 10; i++) {
-			for(int j = 0; j < 10; j++) {
-				if(table[i][j]==true) {
-					System.out.print(hit);
-				} else {
-					System.out.print(water);
-				}
-			}
-			System.out.println();
-		}
-//		fleet.forEach(e -> {
-//			System.out.println(e.name() + ": " + e.getCoordinates()[0] + ", " +
-//					e.getCoordinates()[1] + ", " +
-//					e.getCoordinates()[e.getCoordinates().length-2] + ", " +
-//					e.getCoordinates()[e.getCoordinates().length-1]);
-//		});
-//		System.out.println(carrier.name());
-//		game.reset();
-//		System.out.println(table[0][0]);
-//		System.out.println("freefields size = " + game.freeFields.size());
-//		System.out.println("fleet size = " + fleet.size());
-//		System.out.println(fieldsCoordinates.get(1)[0] + ", " + fieldsCoordinates.get(1)[1]);
-//		for(int i = 0; i < 10; i++) {
-//			for(int j = 0; j < 10; j++) {
-//				if(table[i][j]==true) {
-//					System.out.print(hit);
-//				} else {
-//					System.out.print(water);
-//				}
-//			}
-//			System.out.println();
-//		}
-//		fleet.forEach(e -> {
-//			System.out.println(e.getCoordinates()[0] + ", " +
-//					e.getCoordinates()[1] + ", " +
-//					e.getCoordinates()[2] + ", " +
-//					e.getCoordinates()[3]);
-//		});
 	}
 
 	private AutoPlace() {

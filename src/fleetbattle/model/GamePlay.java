@@ -30,12 +30,14 @@ public class GamePlay extends BorderPane{
 	private GameData gd;
 	private Connection conn;
 	private BattleLayoutController controller;
+	@SuppressWarnings("unused")
 	private GameOverLayoutController goController;
 	
 	private Canvas canvas;
 	private GraphicsContext gc;
 	private Random rnd = new Random();
 	private ArrayList<Ship> ownFleet;
+	@SuppressWarnings("unused")
 	private ArrayList<Ship> opponentsFleet;
 	private boolean[][] ownHits;
 	private boolean[][] opponentsHits;
@@ -86,6 +88,7 @@ public class GamePlay extends BorderPane{
 			gd.setPlayer1(new Player("you",0,0));
 			gd.setPlayer2(new Player("AI opponent",0,0));
 			controller.drawOwnCanvas();
+			gd.getOpponentsFleet().forEach(e -> e.setSunk(false));
 			drawOpponentsTable();
 			if(!turn) {
 				opponentsTurn();
@@ -151,7 +154,7 @@ public class GamePlay extends BorderPane{
 		int x = 0;
 		for(int i = 0; i < 10; i++) {
 			for(int j = 0; j < 10; j++) {
-				gd.opponentsTable[i][j] = Boolean.parseBoolean(tmp[19+x]);
+				gd.getOpponentsTable()[i][j] = Boolean.parseBoolean(tmp[19+x]);
 				x++;
 			}
 		}
@@ -359,42 +362,9 @@ public class GamePlay extends BorderPane{
 			opponentsHit();
 			controller.checkOwnFleet();
 			controller.updateMPGui();
-//			if(countFleetSize(gd.getOwnFleet()) == 0 || countFleetSize(gd.getOpponentsFleet()) == 0) {
-//				mainApp.showGameOverLayout();
-//				resetHits();
-//			}
-			
 		}
 	}
 	
-//	public void drawOwnTable() {
-//		Font font = new Font(30);
-//		gc.setFont(font);
-//		Character[] columns = {'A','B','C','D','E','F','G','H'};
-//		gc.setFill(Color.CADETBLUE);
-//		for(int i = 0; i < columns.length; i++) {
-//			gc.fillText(columns[i].toString(), i*15 + 20, 19);
-//		}
-//		gc.fillText("I", 150, 19);
-//		gc.fillText("J", 170, 19);
-//		for(Integer i = 1; i < 10; i++) {
-//			gc.fillText(i.toString(), 18, (i-1)*30 + 75);
-//		}
-//		gc.fillText("10", 6, 175);
-//		for(int i = 0; i < 10; i++) {
-//			for(int j = 0; j < 10; j++) {
-//				gc.setFill(Color.CADETBLUE);
-//				gc.fillRect((i*15 + 25), (j*15 + 25), 14, 14);
-//				if(opponentsHits[i][j] == true && gd.getOwnTable()[i][j] == false) {
-//					gc.setFill(Color.DARKRED);
-//					gc.fillText("X", (i*15)+26, (j*15)+38);
-//				} else if(opponentsHits[i][j] == true && gd.getOwnTable()[i][j] == true) {
-//					gc.setFill(Color.DARKRED);
-//					gc.fillOval((a*15)+25, (b*15)+25,14,14);
-//				}
-//			}
-//		}
-//	}
 	
 /*
  * 	Draws the hits of multiplayer opponent.
@@ -442,8 +412,6 @@ public class GamePlay extends BorderPane{
 									}
 									mainApp.showGameOverLayout();
 									resetHits();
-									// TODO Auto-generated method stub
-									
 								}
 							});
 							break;

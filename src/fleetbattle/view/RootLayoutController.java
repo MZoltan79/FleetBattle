@@ -16,19 +16,15 @@ public class RootLayoutController {
 	MenuItem settings;
 	
 	
-	
-	
 	public void initialize() {
 
 	}
-	
 	
 	public void  handleExit() {
 		System.exit(0);
 	}
 	@FXML
 	public void  handleSettings() {
-//		mainApp.showConnectionSettingsLayout();
 	}
 	
 	public void setMainApp(MainApp mainApp) {

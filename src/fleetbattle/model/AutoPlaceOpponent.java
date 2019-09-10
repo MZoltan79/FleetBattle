@@ -143,6 +143,7 @@ public class AutoPlaceOpponent {
 			}
 		}
 		ship.isPlaced = true;
+		
 	}
 
 	public void placeAll() {
